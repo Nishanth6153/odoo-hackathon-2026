@@ -7,7 +7,10 @@ import type { Employee, EmployeeStatus } from '../../types/employee.types';
 const employeeSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   email: z.string().min(1, 'Email is required').email('Invalid email address'),
+<<<<<<< HEAD
   password: z.string().optional(),
+=======
+>>>>>>> origin/main
   phone: z.string().optional(),
   department: z.string().optional(),
   designation: z.string().optional(),
@@ -41,7 +44,10 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
     defaultValues: {
       name: initialValues?.name || '',
       email: initialValues?.email || '',
+<<<<<<< HEAD
       password: '',
+=======
+>>>>>>> origin/main
       phone: initialValues?.phone || '',
       department: initialValues?.department || '',
       designation: initialValues?.designation || '',
@@ -90,6 +96,7 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
         {errors.email && <span style={{ color: 'red', fontSize: '0.8rem' }}>{errors.email.message}</span>}
       </div>
 
+<<<<<<< HEAD
       {/* Password field - only for creating new employees */}
       {!initialValues && (
         <div>
@@ -108,6 +115,8 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
         </div>
       )}
 
+=======
+>>>>>>> origin/main
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
         <div>
           <label htmlFor="phone" style={{ display: 'block', marginBottom: '0.25rem', fontWeight: 500 }}>

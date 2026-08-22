@@ -12,7 +12,10 @@ import { MyAttendancePage } from './pages/MyAttendancePage';
 import { AttendancePage } from './pages/AttendancePage';
 import { MyTimeOffPage } from './pages/MyTimeOffPage';
 import { TimeOffManagementPage } from './pages/TimeOffManagementPage';
+<<<<<<< HEAD
 import { MyPayrollPage } from './pages/MyPayrollPage';
+=======
+>>>>>>> origin/main
 import { SalaryPage } from './pages/SalaryPage';
 
 const RootRedirect: React.FC = () => {
@@ -128,6 +131,7 @@ function App() {
               </ProtectedRoute>
             }
           />
+<<<<<<< HEAD
           <Route
             path="/employee/payroll"
             element={
@@ -136,6 +140,8 @@ function App() {
               </ProtectedRoute>
             }
           />
+=======
+>>>>>>> origin/main
 
           {/* Fallback redirect */}
           <Route path="*" element={<Navigate to="/" replace />} />
