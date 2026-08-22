@@ -8,65 +8,49 @@ interface AttendanceStatusBadgeProps {
 export const AttendanceStatusBadge: React.FC<AttendanceStatusBadgeProps> = ({ status }) => {
   if (!status) {
     return (
-      <span
-        style={{
-          display: 'inline-block',
-          fontSize: '0.8rem',
-          padding: '0.25rem 0.65rem',
-          borderRadius: '12px',
-          fontWeight: 600,
-          backgroundColor: '#f0f0f0',
-          color: '#666666',
-        }}
-      >
+      <span className="badge badge-neutral">
+        <span className="badge-dot" />
         Not Checked In
       </span>
     );
   }
 
-  const getStyle = () => {
+  const getConfig = () => {
     switch (status) {
       case 'PRESENT':
         return {
-          bg: '#e6f4ea',
-          color: '#137333',
-          label: 'Present / In Office',
-        };
-      case 'ON_LEAVE':
-        return {
-          bg: '#e8f0fe',
-          color: '#1a73e8',
-          label: 'On Leave',
+          className: 'badge badge-success',
+          label: 'Present',
         };
       case 'ABSENT':
         return {
-          bg: '#fef7e0',
-          color: '#b06000',
+          className: 'badge badge-error',
           label: 'Absent',
+        };
+      case 'HALF_DAY':
+        return {
+          className: 'badge badge-warning',
+          label: 'Half Day',
+        };
+      case 'ON_LEAVE':
+      case 'LEAVE' as any:
+        return {
+          className: 'badge badge-info',
+          label: 'On Leave',
         };
       default:
         return {
-          bg: '#f0f0f0',
-          color: '#666666',
+          className: 'badge badge-neutral',
           label: status,
         };
     }
   };
 
-  const { bg, color, label } = getStyle();
+  const { className, label } = getConfig();
 
   return (
-    <span
-      style={{
-        display: 'inline-block',
-        fontSize: '0.8rem',
-        padding: '0.25rem 0.65rem',
-        borderRadius: '12px',
-        fontWeight: 600,
-        backgroundColor: bg,
-        color: color,
-      }}
-    >
+    <span className={className}>
+      <span className="badge-dot" />
       {label}
     </span>
   );
