@@ -8,6 +8,10 @@ interface AttendanceStatusBadgeProps {
 export const AttendanceStatusBadge: React.FC<AttendanceStatusBadgeProps> = ({ status }) => {
   if (!status) {
     return (
+<<<<<<< HEAD
+      <span className="badge badge-neutral">
+        <span className="badge-dot" />
+=======
       <span
         style={{
           display: 'inline-block',
@@ -19,11 +23,40 @@ export const AttendanceStatusBadge: React.FC<AttendanceStatusBadgeProps> = ({ st
           color: '#666666',
         }}
       >
+>>>>>>> origin/main
         Not Checked In
       </span>
     );
   }
 
+<<<<<<< HEAD
+  const getConfig = () => {
+    switch (status) {
+      case 'PRESENT':
+        return {
+          className: 'badge badge-success',
+          label: 'Present',
+        };
+      case 'ABSENT':
+        return {
+          className: 'badge badge-error',
+          label: 'Absent',
+        };
+      case 'HALF_DAY':
+        return {
+          className: 'badge badge-warning',
+          label: 'Half Day',
+        };
+      case 'ON_LEAVE':
+      case 'LEAVE' as any:
+        return {
+          className: 'badge badge-info',
+          label: 'On Leave',
+        };
+      default:
+        return {
+          className: 'badge badge-neutral',
+=======
   const getStyle = () => {
     switch (status) {
       case 'PRESENT':
@@ -48,11 +81,19 @@ export const AttendanceStatusBadge: React.FC<AttendanceStatusBadgeProps> = ({ st
         return {
           bg: '#f0f0f0',
           color: '#666666',
+>>>>>>> origin/main
           label: status,
         };
     }
   };
 
+<<<<<<< HEAD
+  const { className, label } = getConfig();
+
+  return (
+    <span className={className}>
+      <span className="badge-dot" />
+=======
   const { bg, color, label } = getStyle();
 
   return (
@@ -67,6 +108,7 @@ export const AttendanceStatusBadge: React.FC<AttendanceStatusBadgeProps> = ({ st
         color: color,
       }}
     >
+>>>>>>> origin/main
       {label}
     </span>
   );

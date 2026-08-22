@@ -39,45 +39,47 @@ export const AttendanceTable: React.FC<AttendanceTableProps> = ({ records, showE
 
   if (!records || records.length === 0) {
     return (
-      <div style={{ padding: '2.5rem', textAlign: 'center', backgroundColor: '#f9f9f9', borderRadius: '8px', color: '#777' }}>
-        No attendance records found.
+      <div className="empty-state">
+        <div className="empty-state-icon">📋</div>
+        <div className="empty-state-title">No Attendance Records</div>
+        <p className="empty-state-desc">There are no attendance records matching the current criteria.</p>
       </div>
     );
   }
 
   return (
-    <div style={{ overflowX: 'auto', border: '1px solid #e0e0e0', borderRadius: '8px', backgroundColor: '#ffffff' }}>
-      <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.9rem' }}>
+    <div className="table-container">
+      <table className="table">
         <thead>
-          <tr style={{ backgroundColor: '#f5f7fa', borderBottom: '1px solid #e0e0e0' }}>
-            <th style={{ padding: '0.85rem 1rem', fontWeight: 600, color: '#444' }}>Date</th>
-            {showEmployeeInfo && <th style={{ padding: '0.85rem 1rem', fontWeight: 600, color: '#444' }}>Employee</th>}
-            {showEmployeeInfo && <th style={{ padding: '0.85rem 1rem', fontWeight: 600, color: '#444' }}>Dept</th>}
-            <th style={{ padding: '0.85rem 1rem', fontWeight: 600, color: '#444' }}>Status</th>
-            <th style={{ padding: '0.85rem 1rem', fontWeight: 600, color: '#444' }}>Check In</th>
-            <th style={{ padding: '0.85rem 1rem', fontWeight: 600, color: '#444' }}>Check Out</th>
-            <th style={{ padding: '0.85rem 1rem', fontWeight: 600, color: '#444' }}>Work Duration</th>
-            <th style={{ padding: '0.85rem 1rem', fontWeight: 600, color: '#444' }}>Extra Hours</th>
+          <tr>
+            <th>Date</th>
+            {showEmployeeInfo && <th>Employee</th>}
+            {showEmployeeInfo && <th>Department</th>}
+            <th>Status</th>
+            <th>Check In</th>
+            <th>Check Out</th>
+            <th>Work Duration</th>
+            <th>Extra Hours</th>
           </tr>
         </thead>
         <tbody>
           {records.map((rec) => (
-            <tr key={rec.id} style={{ borderBottom: '1px solid #f0f0f0' }}>
-              <td style={{ padding: '0.85rem 1rem', fontWeight: 500, color: '#222' }}>{formatDate(rec.date)}</td>
+            <tr key={rec.id}>
+              <td style={{ fontWeight: 500 }}>{formatDate(rec.date)}</td>
               {showEmployeeInfo && (
-                <td style={{ padding: '0.85rem 1rem', color: '#222' }}>
-                  <div style={{ fontWeight: 500 }}>{rec.employeeName || 'Unknown'}</div>
-                  {rec.employeeEmail && <div style={{ fontSize: '0.8rem', color: '#666' }}>{rec.employeeEmail}</div>}
+                <td>
+                  <div style={{ fontWeight: 500, color: 'var(--color-text-primary)' }}>{rec.employeeName || 'Unknown'}</div>
+                  {rec.employeeEmail && <div style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)' }}>{rec.employeeEmail}</div>}
                 </td>
               )}
-              {showEmployeeInfo && <td style={{ padding: '0.85rem 1rem', color: '#555' }}>{rec.department || '—'}</td>}
-              <td style={{ padding: '0.85rem 1rem' }}>
+              {showEmployeeInfo && <td style={{ color: 'var(--color-text-secondary)' }}>{rec.department || '—'}</td>}
+              <td>
                 <AttendanceStatusBadge status={rec.status} />
               </td>
-              <td style={{ padding: '0.85rem 1rem', color: '#333' }}>{formatTime(rec.checkIn)}</td>
-              <td style={{ padding: '0.85rem 1rem', color: '#333' }}>{formatTime(rec.checkOut)}</td>
-              <td style={{ padding: '0.85rem 1rem', color: '#333', fontWeight: 500 }}>{formatMinutes(rec.workMinutes)}</td>
-              <td style={{ padding: '0.85rem 1rem', color: rec.extraMinutes ? '#137333' : '#777' }}>
+              <td style={{ color: 'var(--color-text-secondary)' }}>{formatTime(rec.checkIn)}</td>
+              <td style={{ color: 'var(--color-text-secondary)' }}>{formatTime(rec.checkOut)}</td>
+              <td style={{ fontWeight: 500 }}>{formatMinutes(rec.workMinutes)}</td>
+              <td style={{ color: rec.extraMinutes ? 'var(--color-success)' : 'var(--color-text-muted)' }}>
                 {formatMinutes(rec.extraMinutes)}
               </td>
             </tr>
@@ -87,3 +89,5 @@ export const AttendanceTable: React.FC<AttendanceTableProps> = ({ records, showE
     </div>
   );
 };
+
+export default AttendanceTable;

@@ -9,6 +9,37 @@ import {
 } from './salary.validation';
 
 export class SalaryController {
+  async getMySalary(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const userId = (req as any).user?.userId;
+      if (!userId) {
+        res.status(401).json({ success: false, message: 'Unauthorized' });
+        return;
+      }
+
+      // Find employee by userId
+      const { prisma } = await import('../config/prisma');
+      const employee = await prisma.employee.findUnique({ where: { userId } });
+      if (!employee) {
+        res.status(404).json({ success: false, message: 'Employee profile not found' });
+        return;
+      }
+
+      const result = await salaryService.getSalary(employee.id);
+
+      res.status(200).json({
+        success: true,
+        data: result,
+      });
+    } catch (error: any) {
+      if (error.statusCode === 404) {
+        res.status(404).json({ success: false, message: 'Salary information not available' });
+        return;
+      }
+      next(error);
+    }
+  }
+
   async getSalary(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const employeeId = req.params.employeeId as string;

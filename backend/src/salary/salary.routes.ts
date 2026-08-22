@@ -6,6 +6,11 @@ import { authorize } from '../middleware/authorize';
 
 const router = Router();
 
+// Employee read-only salary view (MUST be before /:employeeId to avoid route collision)
+router.get('/me', authenticate, (req, res, next) =>
+  salaryController.getMySalary(req, res, next)
+);
+
 // Component routes (registered BEFORE /:employeeId to prevent route matching collisions)
 router.patch('/components/:id', authenticate, authorize(Role.ADMIN), (req, res, next) =>
   salaryController.updateComponent(req, res, next)

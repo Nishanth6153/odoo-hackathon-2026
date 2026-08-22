@@ -6,6 +6,7 @@ import employeeRouter from './employees/employee.routes';
 import attendanceRouter from './attendance/attendance.routes';
 import timeoffRouter from './timeoff/timeoff.routes';
 import salaryRouter from './salary/salary.routes';
+import dashboardRouter from './dashboard/dashboard.routes';
 import { notFoundHandler } from './middleware/notFound';
 import { errorHandler } from './middleware/errorHandler';
 
@@ -43,6 +44,9 @@ app.use('/api/timeoff', timeoffRouter);
 
 // Salary Information Routes
 app.use('/api/salary', salaryRouter);
+
+// Dashboard Analytics Routes
+app.use('/api/dashboard', dashboardRouter);
 
 // 404 Not Found Middleware
 app.use(notFoundHandler);

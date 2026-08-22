@@ -101,36 +101,42 @@ export const CheckInOutCard: React.FC<CheckInOutCardProps> = ({ todayRecord, onS
   const isCheckedIn = !!todayRecord?.checkIn && !todayRecord?.checkOut;
 
   return (
-    <div style={{ border: '1px solid #e0e0e0', borderRadius: '12px', padding: '1.75rem', backgroundColor: '#ffffff', boxShadow: '0 2px 6px rgba(0,0,0,0.05)' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+    <div className="card card-padding">
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-5)', flexWrap: 'wrap', gap: 'var(--space-2)' }}>
         <div>
-          <h2 style={{ margin: 0, fontSize: '1.25rem', color: '#111' }}>Today's Attendance</h2>
-          <span style={{ fontSize: '0.85rem', color: '#666' }}>{new Date().toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
+          <h2 style={{ margin: 0, fontSize: 'var(--text-lg)', color: 'var(--color-text-primary)' }}>Today's Attendance</h2>
+          <span style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)' }}>
+            {new Date().toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+          </span>
         </div>
         <AttendanceStatusBadge status={todayRecord?.status} />
       </div>
 
       {error && (
-        <div style={{ padding: '0.75rem', backgroundColor: '#ffe6e6', color: '#cc0000', borderRadius: '6px', marginBottom: '1.25rem', fontSize: '0.875rem' }}>
-          {error}
+        <div className="alert alert-error">
+          <span>⚠️ {error}</span>
         </div>
       )}
 
       {/* Main Status & Timer Section */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1.25rem', backgroundColor: '#f8f9fa', padding: '1.25rem', borderRadius: '8px', marginBottom: '1.5rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 'var(--space-4)', backgroundColor: 'var(--color-bg-subtle)', padding: 'var(--space-4)', borderRadius: 'var(--radius-md)', marginBottom: 'var(--space-5)', border: '1px solid var(--color-border)' }}>
         <div>
-          <span style={{ display: 'block', fontSize: '0.8rem', color: '#666', marginBottom: '0.25rem' }}>Check In Time</span>
-          <strong style={{ fontSize: '1.1rem', color: '#222' }}>{formatTime(todayRecord?.checkIn || null)}</strong>
+          <span className="stat-label">Check-In Time</span>
+          <strong style={{ display: 'block', fontSize: 'var(--text-base)', color: 'var(--color-text-primary)', marginTop: 'var(--space-1)' }}>
+            {formatTime(todayRecord?.checkIn || null)}
+          </strong>
         </div>
 
         <div>
-          <span style={{ display: 'block', fontSize: '0.8rem', color: '#666', marginBottom: '0.25rem' }}>Check Out Time</span>
-          <strong style={{ fontSize: '1.1rem', color: '#222' }}>{formatTime(todayRecord?.checkOut || null)}</strong>
+          <span className="stat-label">Check-Out Time</span>
+          <strong style={{ display: 'block', fontSize: 'var(--text-base)', color: 'var(--color-text-primary)', marginTop: 'var(--space-1)' }}>
+            {formatTime(todayRecord?.checkOut || null)}
+          </strong>
         </div>
 
         <div>
-          <span style={{ display: 'block', fontSize: '0.8rem', color: '#666', marginBottom: '0.25rem' }}>Work Duration</span>
-          <strong style={{ fontSize: '1.1rem', color: isCheckedIn ? '#0066cc' : '#222' }}>
+          <span className="stat-label">Work Duration</span>
+          <strong style={{ display: 'block', fontSize: 'var(--text-base)', color: isCheckedIn ? 'var(--color-primary)' : 'var(--color-text-primary)', marginTop: 'var(--space-1)', fontFamily: isCheckedIn ? 'var(--font-mono)' : undefined }}>
             {isCheckedIn ? formatElapsed(elapsedSeconds) : formatMinutes(todayRecord?.workMinutes || null)}
           </strong>
         </div>
@@ -142,46 +148,28 @@ export const CheckInOutCard: React.FC<CheckInOutCardProps> = ({ todayRecord, onS
           <button
             onClick={handleCheckIn}
             disabled={isSubmitting}
-            style={{
-              width: '100%',
-              padding: '0.85rem',
-              fontSize: '1rem',
-              fontWeight: 600,
-              color: '#ffffff',
-              backgroundColor: isSubmitting ? '#999' : '#137333',
-              border: 'none',
-              borderRadius: '6px',
-              cursor: isSubmitting ? 'not-allowed' : 'pointer',
-              transition: 'background-color 0.2s',
-            }}
+            className="btn btn-success btn-lg"
+            style={{ width: '100%' }}
           >
-            {isSubmitting ? 'Checking In...' : '🟢 Check In'}
+            {isSubmitting ? 'Checking In...' : '⏱️ Check In For Today'}
           </button>
         ) : isCheckedIn ? (
           <button
             onClick={handleCheckOut}
             disabled={isSubmitting}
-            style={{
-              width: '100%',
-              padding: '0.85rem',
-              fontSize: '1rem',
-              fontWeight: 600,
-              color: '#ffffff',
-              backgroundColor: isSubmitting ? '#999' : '#d93025',
-              border: 'none',
-              borderRadius: '6px',
-              cursor: isSubmitting ? 'not-allowed' : 'pointer',
-              transition: 'background-color 0.2s',
-            }}
+            className="btn btn-danger btn-lg"
+            style={{ width: '100%' }}
           >
-            {isSubmitting ? 'Checking Out...' : '🔴 Check Out'}
+            {isSubmitting ? 'Checking Out...' : '🚪 Check Out'}
           </button>
         ) : (
-          <div style={{ textAlign: 'center', padding: '0.75rem', backgroundColor: '#e6f4ea', color: '#137333', fontWeight: 600, borderRadius: '6px' }}>
-            ✅ Workday Completed
+          <div className="alert alert-success" style={{ justifyContent: 'center', margin: 0, fontWeight: 600 }}>
+            ✅ Workday Completed ({formatMinutes(todayRecord?.workMinutes || null)})
           </div>
         )}
       </div>
     </div>
   );
 };
+
+export default CheckInOutCard;

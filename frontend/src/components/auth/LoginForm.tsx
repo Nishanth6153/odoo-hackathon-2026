@@ -7,7 +7,11 @@ import { useAuth } from '../../context/AuthContext';
 import type { LoginCredentials } from '../../types/auth.types';
 
 const loginSchema = z.object({
+<<<<<<< HEAD
+  loginId: z.string().min(1, 'Email is required').email('Invalid email address'),
+=======
   loginId: z.string().min(1, 'Login ID is required'),
+>>>>>>> origin/main
   password: z.string().min(1, 'Password is required'),
 });
 
@@ -66,11 +70,19 @@ export const LoginForm: React.FC = () => {
       <form onSubmit={handleSubmit(onSubmit)}>
         <div style={{ marginBottom: '1rem' }}>
           <label htmlFor="loginId" style={{ display: 'block', marginBottom: '0.5rem' }}>
+<<<<<<< HEAD
+            Email
+          </label>
+          <input
+            id="loginId"
+            type="email"
+=======
             Login ID
           </label>
           <input
             id="loginId"
             type="text"
+>>>>>>> origin/main
             {...register('loginId')}
             style={{ width: '100%', padding: '0.5rem', boxSizing: 'border-box' }}
             disabled={isSubmitting}
