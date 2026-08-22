@@ -1,22 +1,15 @@
-<<<<<<< HEAD
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { Navbar } from '../components/layout/Navbar';
 import { dashboardService } from '../services/dashboard.service';
 import type { AdminDashboardData } from '../types/dashboard.types';
-=======
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
->>>>>>> origin/main
 
 export const AdminPage: React.FC = () => {
-  const { user, logout } = useAuth();
   const navigate = useNavigate();
-<<<<<<< HEAD
   const [metrics, setMetrics] = useState<AdminDashboardData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [lastUpdated, setLastUpdated] = useState<string>('');
 
   const fetchDashboard = async () => {
     try {
@@ -24,6 +17,7 @@ export const AdminPage: React.FC = () => {
       setError(null);
       const data = await dashboardService.getAdminDashboard();
       setMetrics(data);
+      setLastUpdated(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
     } catch (err: any) {
       setError(err.message || 'Failed to load dashboard metrics.');
     } finally {
@@ -35,320 +29,249 @@ export const AdminPage: React.FC = () => {
     fetchDashboard();
   }, []);
 
-  return (
-    <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '2rem', fontFamily: 'system-ui, sans-serif' }}>
-      {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-        <div>
-          <h1 style={{ margin: 0, color: '#1a1f36' }}>Admin / HR Portal</h1>
-          <p style={{ margin: '0.25rem 0 0 0', color: '#697386' }}>Dayflow Human Resource Management System</p>
-        </div>
-        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-          <button
-            onClick={fetchDashboard}
-            style={{
-              padding: '0.5rem 1rem',
-              backgroundColor: '#f4f5f7',
-              color: '#3c4257',
-              border: '1px solid #dcdfe4',
-              borderRadius: '6px',
-              cursor: 'pointer',
-              fontWeight: 500,
-            }}
-          >
-            🔄 Refresh
-          </button>
-          <button
-            onClick={logout}
-            style={{
-              padding: '0.5rem 1rem',
-              backgroundColor: '#e24d42',
-              color: '#fff',
-              border: 'none',
-              borderRadius: '6px',
-              cursor: 'pointer',
-              fontWeight: 500,
-            }}
-          >
-            Logout
-          </button>
-        </div>
-      </div>
+  // Compute workforce segments from real data
+  const totalEmployees = metrics?.employees.total || 0;
+  const presentToday = metrics?.attendance.presentToday || 0;
+  const onLeaveToday = metrics?.attendance.onLeaveToday || 0;
+  const absentOrPending = Math.max(0, totalEmployees - presentToday - onLeaveToday);
 
-      {/* User Info Banner */}
-      <div
-        style={{
-          border: '1px solid #e3e8ee',
-          padding: '1.25rem 1.5rem',
-          borderRadius: '8px',
-          backgroundColor: '#fff',
-          marginBottom: '2rem',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
-        }}
-      >
-        <div>
-          <span style={{ color: '#697386', fontSize: '0.9rem' }}>Logged in as: </span>
-          <strong style={{ color: '#1a1f36' }}>{user?.email || user?.loginId}</strong>
-        </div>
-        <div>
-          <span
-            style={{
-              backgroundColor: '#e6f4ea',
-              color: '#137333',
-              padding: '0.25rem 0.75rem',
-              borderRadius: '20px',
-              fontSize: '0.85rem',
-              fontWeight: 600,
-            }}
-          >
-            Role: {user?.role}
-          </span>
-        </div>
-      </div>
-
-      {/* Error state */}
-      {error && (
-        <div
-          style={{
-            backgroundColor: '#fde8e8',
-            color: '#c53030',
-            padding: '1rem',
-            borderRadius: '6px',
-            marginBottom: '1.5rem',
-          }}
-        >
-          {error}
-        </div>
-      )}
-
-      {/* Dashboard Metrics Grid */}
-      <h2 style={{ fontSize: '1.25rem', color: '#1a1f36', marginBottom: '1rem' }}>Overview & Analytics</h2>
-      {loading ? (
-        <div style={{ padding: '2rem', textAlign: 'center', color: '#697386' }}>Loading real-time analytics...</div>
-      ) : metrics ? (
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-            gap: '1.25rem',
-            marginBottom: '2rem',
-          }}
-        >
-          {/* Total Employees */}
-          <div
-            style={{
-              backgroundColor: '#fff',
-              border: '1px solid #e3e8ee',
-              borderRadius: '8px',
-              padding: '1.5rem',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
-            }}
-          >
-            <div style={{ color: '#697386', fontSize: '0.875rem', fontWeight: 500 }}>Total Employees</div>
-            <div style={{ fontSize: '2rem', fontWeight: 700, color: '#0066cc', marginTop: '0.5rem' }}>
-              {metrics.employees.total}
-            </div>
-            <div style={{ color: '#697386', fontSize: '0.8rem', marginTop: '0.25rem' }}>Active staff members</div>
-          </div>
-
-          {/* Attendance Today */}
-          <div
-            style={{
-              backgroundColor: '#fff',
-              border: '1px solid #e3e8ee',
-              borderRadius: '8px',
-              padding: '1.5rem',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
-            }}
-          >
-            <div style={{ color: '#697386', fontSize: '0.875rem', fontWeight: 500 }}>Today's Attendance</div>
-            <div style={{ fontSize: '2rem', fontWeight: 700, color: '#137333', marginTop: '0.5rem' }}>
-              {metrics.attendance.presentToday} <span style={{ fontSize: '1rem', fontWeight: 400 }}>Present</span>
-            </div>
-            <div style={{ color: '#697386', fontSize: '0.8rem', marginTop: '0.25rem' }}>
-              Rate: <strong>{metrics.attendance.attendanceRate}%</strong> | On Leave: {metrics.attendance.onLeaveToday}
-            </div>
-          </div>
-
-          {/* Pending Leave */}
-          <div
-            style={{
-              backgroundColor: '#fff',
-              border: '1px solid #e3e8ee',
-              borderRadius: '8px',
-              padding: '1.5rem',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
-            }}
-          >
-            <div style={{ color: '#697386', fontSize: '0.875rem', fontWeight: 500 }}>Pending Leave Requests</div>
-            <div style={{ fontSize: '2rem', fontWeight: 700, color: '#b06000', marginTop: '0.5rem' }}>
-              {metrics.leave.pending}
-            </div>
-            <div style={{ color: '#697386', fontSize: '0.8rem', marginTop: '0.25rem' }}>
-              Requires review & approval
-            </div>
-          </div>
-
-          {/* Salary Expenditure */}
-          <div
-            style={{
-              backgroundColor: '#fff',
-              border: '1px solid #e3e8ee',
-              borderRadius: '8px',
-              padding: '1.5rem',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
-            }}
-          >
-            <div style={{ color: '#697386', fontSize: '0.875rem', fontWeight: 500 }}>Monthly Payroll Net</div>
-            <div style={{ fontSize: '2rem', fontWeight: 700, color: '#553c9a', marginTop: '0.5rem' }}>
-              ₹{metrics.salary.totalNetSalary.toLocaleString()}
-            </div>
-            <div style={{ color: '#697386', fontSize: '0.8rem', marginTop: '0.25rem' }}>
-              {metrics.salary.employeesWithSalary} profiles configured
-            </div>
-          </div>
-        </div>
-      ) : null}
-
-      {/* Navigation Quick Actions */}
-      <h2 style={{ fontSize: '1.25rem', color: '#1a1f36', marginBottom: '1rem' }}>Management Modules</h2>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem' }}>
-        <div
-          onClick={() => navigate('/admin/employees')}
-          style={{
-            backgroundColor: '#fff',
-            border: '1px solid #e3e8ee',
-            borderRadius: '8px',
-            padding: '1.5rem',
-            cursor: 'pointer',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
-            transition: 'transform 0.15s ease, box-shadow 0.15s ease',
-          }}
-        >
-          <div style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>👥</div>
-          <h3 style={{ margin: '0 0 0.25rem 0', color: '#0066cc' }}>Employees Directory</h3>
-          <p style={{ margin: 0, color: '#697386', fontSize: '0.875rem' }}>
-            Add new employees, inspect profiles, and manage employee salary structures.
-          </p>
-        </div>
-
-        <div
-          onClick={() => navigate('/admin/attendance')}
-          style={{
-            backgroundColor: '#fff',
-            border: '1px solid #e3e8ee',
-            borderRadius: '8px',
-            padding: '1.5rem',
-            cursor: 'pointer',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
-            transition: 'transform 0.15s ease, box-shadow 0.15s ease',
-          }}
-        >
-          <div style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>⏱️</div>
-          <h3 style={{ margin: '0 0 0.25rem 0', color: '#137333' }}>Attendance Logs</h3>
-          <p style={{ margin: 0, color: '#697386', fontSize: '0.875rem' }}>
-            Monitor real-time check-ins, check-outs, and employee work duration.
-          </p>
-        </div>
-
-        <div
-          onClick={() => navigate('/admin/time-off')}
-          style={{
-            backgroundColor: '#fff',
-            border: '1px solid #e3e8ee',
-            borderRadius: '8px',
-            padding: '1.5rem',
-            cursor: 'pointer',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
-            transition: 'transform 0.15s ease, box-shadow 0.15s ease',
-          }}
-        >
-          <div style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>🌴</div>
-          <h3 style={{ margin: '0 0 0.25rem 0', color: '#b06000' }}>Time Off Approvals</h3>
-          <p style={{ margin: 0, color: '#697386', fontSize: '0.875rem' }}>
-            Review, approve, or reject employee leave requests with attendance sync.
-          </p>
-        </div>
-=======
+  const presentPercent = totalEmployees > 0 ? (presentToday / totalEmployees) * 100 : 0;
+  const leavePercent = totalEmployees > 0 ? (onLeaveToday / totalEmployees) * 100 : 0;
+  const absentPercent = totalEmployees > 0 ? (absentOrPending / totalEmployees) * 100 : 0;
 
   return (
-    <div style={{ maxWidth: '800px', margin: '0 auto', padding: '2rem', fontFamily: 'system-ui, sans-serif' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-        <h1>Admin / HR Dashboard</h1>
-        <button
-          onClick={logout}
-          style={{
-            padding: '0.5rem 1rem',
-            backgroundColor: '#dc3545',
-            color: '#fff',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer',
-          }}
-        >
-          Logout
-        </button>
-      </div>
+    <>
+      <Navbar portalTitle="Administration" />
 
-      <div style={{ border: '1px solid #e0e0e0', padding: '1.5rem', borderRadius: '8px', backgroundColor: '#fff', marginBottom: '2rem' }}>
-        <p><strong>Welcome,</strong> {user?.name}</p>
-        <p><strong>Role:</strong> {user?.role}</p>
-      </div>
+      <main className="page-container">
+        {/* Page Header */}
+        <div className="page-header">
+          <div className="page-title-group">
+            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
+              <h1>Admin / HR Dashboard</h1>
+              <span className="badge badge-success" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '4px 10px' }}>
+                <span className="badge-pulse" />
+                Live
+              </span>
+            </div>
+            <p>
+              Real-time analytics and workforce management overview
+              {lastUpdated && <span style={{ marginLeft: 'var(--space-2)', color: 'var(--color-text-muted)' }}>• Updated at {lastUpdated}</span>}
+            </p>
+          </div>
 
-      <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-        <button
-          onClick={() => navigate('/admin/employees')}
-          style={{
-            padding: '0.75rem 1.5rem',
-            backgroundColor: '#0066cc',
-            color: '#fff',
-            border: 'none',
-            borderRadius: '6px',
-            cursor: 'pointer',
-            fontWeight: 600,
-            fontSize: '1rem',
-          }}
-        >
-          👥 Employees Directory
-        </button>
+          <div style={{ display: 'flex', gap: 'var(--space-3)', alignItems: 'center' }}>
+            <button
+              onClick={fetchDashboard}
+              disabled={loading}
+              className="btn btn-secondary btn-sm"
+            >
+              🔄 {loading ? 'Refreshing...' : 'Refresh Data'}
+            </button>
+          </div>
+        </div>
 
-        <button
-          onClick={() => navigate('/admin/attendance')}
-          style={{
-            padding: '0.75rem 1.5rem',
-            backgroundColor: '#137333',
-            color: '#fff',
-            border: 'none',
-            borderRadius: '6px',
-            cursor: 'pointer',
-            fontWeight: 600,
-            fontSize: '1rem',
-          }}
-        >
-          ⏱️ Attendance Management
-        </button>
+        {/* Error Banner */}
+        {error && (
+          <div className="alert alert-error" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span>⚠️ {error}</span>
+            <button onClick={fetchDashboard} className="btn btn-sm btn-danger">
+              Retry
+            </button>
+          </div>
+        )}
 
-        <button
-          onClick={() => navigate('/admin/time-off')}
-          style={{
-            padding: '0.75rem 1.5rem',
-            backgroundColor: '#b06000',
-            color: '#fff',
-            border: 'none',
-            borderRadius: '6px',
-            cursor: 'pointer',
-            fontWeight: 600,
-            fontSize: '1rem',
-          }}
-        >
-          🌴 Time Off & Leave Requests
-        </button>
->>>>>>> origin/main
-      </div>
-    </div>
+        {/* Dashboard Metrics Grid */}
+        <section style={{ marginBottom: 'var(--space-8)' }}>
+          <h2 style={{ fontSize: 'var(--text-lg)', marginBottom: 'var(--space-4)', color: 'var(--color-text-primary)' }}>
+            Organization Overview
+          </h2>
+
+          {loading ? (
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+                gap: 'var(--space-4)',
+              }}
+            >
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="stat-card">
+                  <div className="skeleton skeleton-text" style={{ width: '40%' }} />
+                  <div className="skeleton skeleton-stat" />
+                  <div className="skeleton skeleton-text" style={{ width: '60%' }} />
+                </div>
+              ))}
+            </div>
+          ) : metrics ? (
+            <>
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+                  gap: 'var(--space-4)',
+                  marginBottom: 'var(--space-6)',
+                }}
+              >
+                {/* Total Employees */}
+                <div className="stat-card card-hover" style={{ cursor: 'pointer' }} onClick={() => navigate('/admin/employees')}>
+                  <span className="stat-label">Total Employees</span>
+                  <div className="stat-value" style={{ color: 'var(--color-primary)' }}>
+                    {metrics.employees.total}
+                  </div>
+                  <span className="stat-subtext">Active staff members</span>
+                </div>
+
+                {/* Attendance Today */}
+                <div className="stat-card card-hover" style={{ cursor: 'pointer' }} onClick={() => navigate('/admin/attendance')}>
+                  <span className="stat-label">Today's Attendance</span>
+                  <div className="stat-value" style={{ color: 'var(--color-success)' }}>
+                    {metrics.attendance.presentToday} <span style={{ fontSize: 'var(--text-sm)', fontWeight: 'normal', color: 'var(--color-text-muted)' }}>Present</span>
+                  </div>
+                  <span className="stat-subtext">
+                    Rate: <strong>{metrics.attendance.attendanceRate}%</strong> | On Leave: {metrics.attendance.onLeaveToday}
+                  </span>
+                </div>
+
+                {/* Pending Leave */}
+                <div className="stat-card card-hover" style={{ cursor: 'pointer' }} onClick={() => navigate('/admin/time-off')}>
+                  <span className="stat-label">Pending Leave Requests</span>
+                  <div className="stat-value" style={{ color: 'var(--color-warning)' }}>
+                    {metrics.leave.pending}
+                  </div>
+                  <span className="stat-subtext">Requires HR review & decision</span>
+                </div>
+
+                {/* Salary Payroll */}
+                <div className="stat-card card-hover">
+                  <span className="stat-label">Monthly Payroll Net</span>
+                  <div className="stat-value" style={{ color: 'var(--color-purple)' }}>
+                    ₹{metrics.salary.totalNetSalary.toLocaleString()}
+                  </div>
+                  <span className="stat-subtext">
+                    {metrics.salary.employeesWithSalary} employee profiles configured
+                  </span>
+                </div>
+              </div>
+
+              {/* Real Data: Today's Workforce Visualization */}
+              <div className="card card-padding" style={{ marginBottom: 'var(--space-4)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-3)' }}>
+                  <div>
+                    <h3 style={{ margin: 0, fontSize: 'var(--text-base)', color: 'var(--color-text-primary)' }}>
+                      Today's Workforce Status
+                    </h3>
+                    <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)', marginTop: '2px' }}>
+                      Real-time distribution across active staff members ({totalEmployees} total)
+                    </p>
+                  </div>
+                  <span className="badge badge-neutral" style={{ fontFamily: 'var(--font-mono)' }}>
+                    {metrics.attendance.attendanceRate}% Attendance Rate
+                  </span>
+                </div>
+
+                {/* Multi-segment capacity bar */}
+                <div className="workforce-bar" style={{ marginBottom: 'var(--space-4)' }}>
+                  <div
+                    className="workforce-segment"
+                    style={{ width: `${presentPercent}%`, backgroundColor: 'var(--color-success)' }}
+                    title={`Present: ${presentToday} (${presentPercent.toFixed(1)}%)`}
+                  />
+                  <div
+                    className="workforce-segment"
+                    style={{ width: `${leavePercent}%`, backgroundColor: 'var(--color-info)' }}
+                    title={`On Leave: ${onLeaveToday} (${leavePercent.toFixed(1)}%)`}
+                  />
+                  <div
+                    className="workforce-segment"
+                    style={{ width: `${absentPercent}%`, backgroundColor: 'var(--color-border)' }}
+                    title={`Not Logged In: ${absentOrPending} (${absentPercent.toFixed(1)}%)`}
+                  />
+                </div>
+
+                {/* Status Legend Pills */}
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-4)', fontSize: 'var(--text-xs)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
+                    <span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: 'var(--color-success)' }} />
+                    <span style={{ color: 'var(--color-text-secondary)' }}>Present:</span>
+                    <strong>{presentToday} ({presentPercent.toFixed(0)}%)</strong>
+                  </div>
+
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
+                    <span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: 'var(--color-info)' }} />
+                    <span style={{ color: 'var(--color-text-secondary)' }}>On Leave:</span>
+                    <strong>{onLeaveToday} ({leavePercent.toFixed(0)}%)</strong>
+                  </div>
+
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
+                    <span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: 'var(--color-border)' }} />
+                    <span style={{ color: 'var(--color-text-secondary)' }}>Not Logged In:</span>
+                    <strong>{absentOrPending} ({absentPercent.toFixed(0)}%)</strong>
+                  </div>
+                </div>
+              </div>
+            </>
+          ) : null}
+        </section>
+
+        {/* Management Modules */}
+        <section>
+          <h2 style={{ fontSize: 'var(--text-lg)', marginBottom: 'var(--space-4)', color: 'var(--color-text-primary)' }}>
+            Management Modules
+          </h2>
+
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+              gap: 'var(--space-5)',
+            }}
+          >
+            {/* Employees Module */}
+            <div
+              onClick={() => navigate('/admin/employees')}
+              className="action-card"
+            >
+              <div style={{ fontSize: '1.75rem', marginBottom: 'var(--space-3)' }}>👥</div>
+              <h3 style={{ margin: 0, color: 'var(--color-primary)', fontSize: 'var(--text-base)' }}>
+                Employees Directory
+              </h3>
+              <p style={{ margin: 'var(--space-2) 0 0', color: 'var(--color-text-secondary)', fontSize: 'var(--text-sm)', lineHeight: 1.5 }}>
+                Add new employees, inspect profiles, configure departments, and manage salary compensation structures.
+              </p>
+            </div>
+
+            {/* Attendance Module */}
+            <div
+              onClick={() => navigate('/admin/attendance')}
+              className="action-card"
+            >
+              <div style={{ fontSize: '1.75rem', marginBottom: 'var(--space-3)' }}>⏱️</div>
+              <h3 style={{ margin: 0, color: 'var(--color-success)', fontSize: 'var(--text-base)' }}>
+                Attendance Logs
+              </h3>
+              <p style={{ margin: 'var(--space-2) 0 0', color: 'var(--color-text-secondary)', fontSize: 'var(--text-sm)', lineHeight: 1.5 }}>
+                Monitor organization-wide real-time check-ins, check-outs, work durations, and extra overtime hours.
+              </p>
+            </div>
+
+            {/* Time Off Module */}
+            <div
+              onClick={() => navigate('/admin/time-off')}
+              className="action-card"
+            >
+              <div style={{ fontSize: '1.75rem', marginBottom: 'var(--space-3)' }}>🌴</div>
+              <h3 style={{ margin: 0, color: 'var(--color-warning)', fontSize: 'var(--text-base)' }}>
+                Time Off Approvals
+              </h3>
+              <p style={{ margin: 'var(--space-2) 0 0', color: 'var(--color-text-secondary)', fontSize: 'var(--text-sm)', lineHeight: 1.5 }}>
+                Review, approve, or reject employee leave applications with automatic attendance synchronization.
+              </p>
+            </div>
+          </div>
+        </section>
+      </main>
+    </>
   );
 };
 

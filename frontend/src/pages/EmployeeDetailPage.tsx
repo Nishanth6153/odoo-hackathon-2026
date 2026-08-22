@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { Navbar } from '../components/layout/Navbar';
 import { employeeService } from '../services/employee.service';
 import { EmployeeForm, type EmployeeFormData } from '../components/employees/EmployeeForm';
 import { TagListInput } from '../components/employees/TagListInput';
@@ -89,232 +90,227 @@ export const EmployeeDetailPage: React.FC = () => {
 
   const canViewSalary = user?.role === 'ADMIN' || user?.role === 'HR';
 
-  if (loading) {
-    return <div style={{ padding: '3rem', textAlign: 'center', color: '#666' }}>Loading employee details...</div>;
-  }
+  return (
+    <>
+      <Navbar portalTitle="Administration" />
 
-  if (error || !employee) {
-    return (
-      <div style={{ maxWidth: '600px', margin: '2rem auto', padding: '2rem', textAlign: 'center', backgroundColor: '#ffe6e6', borderRadius: '8px' }}>
-        <h2 style={{ color: '#cc0000', marginTop: 0 }}>Employee Not Found</h2>
-        <p>{error || 'The requested employee could not be found.'}</p>
+      <main className="page-container" style={{ maxWidth: '960px' }}>
         <button
           onClick={() => navigate('/admin/employees')}
-          style={{ padding: '0.5rem 1rem', backgroundColor: '#0066cc', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+          className="back-link"
         >
-          Return to Employees Directory
+          ← Back to Employees Directory
         </button>
-      </div>
-    );
-  }
 
-  return (
-    <div style={{ maxWidth: '900px', margin: '0 auto', padding: '2rem' }}>
-      <button
-        onClick={() => navigate('/admin/employees')}
-        style={{ marginBottom: '1rem', background: 'none', border: 'none', color: '#0066cc', cursor: 'pointer', textDecoration: 'underline' }}
-      >
-        ← Back to Employees Directory
-      </button>
-
-      <div style={{ border: '1px solid #e0e0e0', borderRadius: '8px', padding: '2rem', backgroundColor: '#fff' }}>
-        {/* Header section with avatar, name, status, and edit / salary buttons */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid #eee', paddingBottom: '1.5rem', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
-            {employee.profileImage ? (
-              <img
-                src={employee.profileImage}
-                alt={employee.name}
-                style={{ width: '72px', height: '72px', borderRadius: '50%', objectFit: 'cover' }}
-              />
-            ) : (
-              <div
-                style={{
-                  width: '72px',
-                  height: '72px',
-                  borderRadius: '50%',
-                  backgroundColor: '#0066cc',
-                  color: '#fff',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '1.75rem',
-                  fontWeight: 'bold',
-                }}
-              >
-                {getInitials(employee.name)}
-              </div>
-            )}
-
-            <div>
-              <h1 style={{ margin: 0, fontSize: '1.75rem' }}>{employee.name}</h1>
-              <p style={{ margin: '0.25rem 0 0', color: '#666', fontSize: '1rem' }}>
-                {employee.designation || 'No Designation'} • {employee.department || 'No Department'}
-              </p>
-              <span
-                style={{
-                  display: 'inline-block',
-                  marginTop: '0.5rem',
-                  fontSize: '0.8rem',
-                  padding: '0.2rem 0.6rem',
-                  borderRadius: '12px',
-                  fontWeight: 600,
-                  backgroundColor: employee.status === 'ACTIVE' ? '#e6f4ea' : '#feefe3',
-                  color: employee.status === 'ACTIVE' ? '#137333' : '#b06000',
-                }}
-              >
-                {employee.status || 'ACTIVE'}
-              </span>
-            </div>
+        {loading ? (
+          <div className="loading-box">
+            <div className="spinner" />
+            <span>Loading employee profile...</span>
           </div>
-
-          <div style={{ display: 'flex', gap: '0.75rem' }}>
-            {canViewSalary && (
-              <button
-                onClick={() => navigate(`/admin/employees/${id}/salary`)}
-                style={{
-                  padding: '0.5rem 1rem',
-                  backgroundColor: '#137333',
-                  color: '#fff',
-                  border: 'none',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  fontWeight: 500,
-                }}
-              >
-                💼 Salary & Compensation
-              </button>
-            )}
-
+        ) : error || !employee ? (
+          <div className="empty-state">
+            <div className="empty-state-icon">❌</div>
+            <div className="empty-state-title">Employee Not Found</div>
+            <p className="empty-state-desc">{error || 'The requested employee profile does not exist.'}</p>
             <button
-              onClick={() => setIsEditing(!isEditing)}
-              style={{
-                padding: '0.5rem 1rem',
-                backgroundColor: isEditing ? '#666' : '#0066cc',
-                color: '#fff',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                fontWeight: 500,
-              }}
+              onClick={() => navigate('/admin/employees')}
+              className="btn btn-primary btn-sm"
+              style={{ marginTop: 'var(--space-4)' }}
             >
-              {isEditing ? 'Cancel Editing' : 'Edit Profile'}
+              Return to Directory
             </button>
           </div>
-        </div>
-
-        {/* Edit mode vs View mode */}
-        {isEditing ? (
-          <div style={{ backgroundColor: '#fafafa', padding: '1.5rem', borderRadius: '6px' }}>
-            <h3 style={{ marginTop: 0 }}>Edit Employee Information</h3>
-            <EmployeeForm
-              initialValues={employee}
-              onSubmit={handleUpdate}
-              onCancel={() => setIsEditing(false)}
-              submitButtonText="Update Employee"
-              apiError={editApiError}
-            />
-
-            <div style={{ marginTop: '1.5rem', borderTop: '1px solid #ddd', paddingTop: '1rem' }}>
-              <h4>Additional Profile Fields</h4>
-              <div style={{ marginBottom: '1rem' }}>
-                <label style={{ display: 'block', marginBottom: '0.25rem', fontWeight: 500 }}>About</label>
-                <textarea
-                  value={about}
-                  onChange={(e) => setAbout(e.target.value)}
-                  rows={3}
-                  style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc', boxSizing: 'border-box' }}
-                />
-              </div>
-
-              <TagListInput label="Skills" items={skills} onChange={setSkills} placeholder="e.g. React, Python" />
-              <TagListInput label="Interests & Hobbies" items={interests} onChange={setInterests} placeholder="e.g. Reading, Cycling" />
-              <TagListInput label="Certifications" items={certifications} onChange={setCertifications} placeholder="e.g. AWS Certified" />
-            </div>
-          </div>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
-            {/* Left Info Column */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <h3>Primary Information</h3>
-              <div>
-                <strong>Employee ID / ID:</strong> <span style={{ color: '#444' }}>{employee.id}</span>
-              </div>
-              {employee.loginId && (
+          <div className="card card-padding">
+            {/* Header section with avatar, name, status, and edit/salary buttons */}
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                borderBottom: '1px solid var(--color-border)',
+                paddingBottom: 'var(--space-6)',
+                marginBottom: 'var(--space-6)',
+                flexWrap: 'wrap',
+                gap: 'var(--space-4)',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-4)' }}>
+                {employee.profileImage ? (
+                  <img
+                    src={employee.profileImage}
+                    alt={employee.name}
+                    style={{ width: '64px', height: '64px', borderRadius: 'var(--radius-full)', objectFit: 'cover', border: '1px solid var(--color-border)' }}
+                  />
+                ) : (
+                  <div
+                    style={{
+                      width: '64px',
+                      height: '64px',
+                      borderRadius: 'var(--radius-full)',
+                      backgroundColor: 'var(--color-primary-light)',
+                      color: 'var(--color-primary)',
+                      border: '1px solid var(--color-primary-border)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: 'var(--text-xl)',
+                      fontWeight: 700,
+                    }}
+                  >
+                    {getInitials(employee.name)}
+                  </div>
+                )}
+
                 <div>
-                  <strong>Login ID:</strong> <span style={{ color: '#444' }}>{employee.loginId}</span>
+                  <h1 style={{ margin: 0, fontSize: 'var(--text-xl)' }}>{employee.name}</h1>
+                  <p style={{ margin: '2px 0 0', color: 'var(--color-text-muted)', fontSize: 'var(--text-sm)' }}>
+                    {employee.designation || 'Staff'} • {employee.department || 'General'}
+                  </p>
+                  <span
+                    className={`badge ${employee.status === 'ACTIVE' ? 'badge-success' : 'badge-neutral'}`}
+                    style={{ marginTop: 'var(--space-2)' }}
+                  >
+                    <span className="badge-dot" />
+                    {employee.status || 'ACTIVE'}
+                  </span>
                 </div>
-              )}
-              <div>
-                <strong>Email:</strong> <span style={{ color: '#444' }}>{employee.email}</span>
               </div>
-              <div>
-                <strong>Phone:</strong> <span style={{ color: '#444' }}>{employee.phone || 'N/A'}</span>
-              </div>
-              <div>
-                <strong>Joining Date:</strong> <span style={{ color: '#444' }}>{employee.joiningDate || 'N/A'}</span>
+
+              <div style={{ display: 'flex', gap: 'var(--space-2)', flexWrap: 'wrap' }}>
+                {canViewSalary && (
+                  <button
+                    onClick={() => navigate(`/admin/employees/${id}/salary`)}
+                    className="btn btn-success"
+                  >
+                    💼 Salary Structure
+                  </button>
+                )}
+
+                <button
+                  onClick={() => setIsEditing(!isEditing)}
+                  className={`btn ${isEditing ? 'btn-secondary' : 'btn-primary'}`}
+                >
+                  {isEditing ? 'Cancel Editing' : 'Edit Profile'}
+                </button>
               </div>
             </div>
 
-            {/* Right Info Column */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <h3>Profile Details</h3>
+            {/* Edit mode vs View mode */}
+            {isEditing ? (
               <div>
-                <strong>About:</strong>
-                <p style={{ margin: '0.25rem 0', color: '#555', whiteSpace: 'pre-wrap' }}>
-                  {employee.about || 'No description provided.'}
-                </p>
-              </div>
+                <h3 style={{ marginBottom: 'var(--space-4)', fontSize: 'var(--text-base)' }}>Edit Employee Information</h3>
+                <EmployeeForm
+                  initialValues={employee}
+                  onSubmit={handleUpdate}
+                  onCancel={() => setIsEditing(false)}
+                  submitButtonText="Save Changes"
+                  apiError={editApiError}
+                />
 
-              <div>
-                <strong>Skills:</strong>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem', marginTop: '0.25rem' }}>
-                  {employee.skills && employee.skills.length > 0 ? (
-                    employee.skills.map((skill, idx) => (
-                      <span key={idx} style={{ background: '#eef2f6', padding: '0.2rem 0.5rem', borderRadius: '12px', fontSize: '0.85rem' }}>
-                        {skill}
-                      </span>
-                    ))
-                  ) : (
-                    <span style={{ color: '#888', fontSize: '0.9rem' }}>None listed</span>
-                  )}
+                <div style={{ marginTop: 'var(--space-6)', borderTop: '1px solid var(--color-border)', paddingTop: 'var(--space-6)' }}>
+                  <h4 style={{ marginBottom: 'var(--space-3)', fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)' }}>
+                    Additional Profile Fields
+                  </h4>
+
+                  <div className="form-group">
+                    <label className="form-label">About / Biography</label>
+                    <textarea
+                      value={about}
+                      onChange={(e) => setAbout(e.target.value)}
+                      rows={3}
+                      className="form-textarea"
+                      placeholder="Write a brief bio..."
+                    />
+                  </div>
+
+                  <TagListInput label="Skills & Technologies" items={skills} onChange={setSkills} placeholder="e.g. TypeScript, React, SQL" />
+                  <TagListInput label="Interests & Hobbies" items={interests} onChange={setInterests} placeholder="e.g. Photography, Running" />
+                  <TagListInput label="Certifications" items={certifications} onChange={setCertifications} placeholder="e.g. AWS Certified Developer" />
                 </div>
               </div>
+            ) : (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 'var(--space-6)' }}>
+                {/* Left Info Column */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
+                  <h3 style={{ fontSize: 'var(--text-sm)', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-text-muted)' }}>
+                    Primary Details
+                  </h3>
 
-              <div>
-                <strong>Interests & Hobbies:</strong>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem', marginTop: '0.25rem' }}>
-                  {employee.interests && employee.interests.length > 0 ? (
-                    employee.interests.map((interest, idx) => (
-                      <span key={idx} style={{ background: '#eef2f6', padding: '0.2rem 0.5rem', borderRadius: '12px', fontSize: '0.85rem' }}>
-                        {interest}
-                      </span>
-                    ))
-                  ) : (
-                    <span style={{ color: '#888', fontSize: '0.9rem' }}>None listed</span>
-                  )}
+                  <div style={{ backgroundColor: 'var(--color-bg-subtle)', padding: 'var(--space-4)', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)', display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
+                    <div>
+                      <span className="stat-label">Employee ID</span>
+                      <div style={{ fontFamily: 'var(--font-mono)', fontWeight: 600, color: 'var(--color-text-primary)' }}>{employee.loginId || employee.id}</div>
+                    </div>
+
+                    <div>
+                      <span className="stat-label">Email Address</span>
+                      <div style={{ color: 'var(--color-text-primary)' }}>{employee.email}</div>
+                    </div>
+
+                    <div>
+                      <span className="stat-label">Phone Number</span>
+                      <div style={{ color: 'var(--color-text-primary)' }}>{employee.phone || '—'}</div>
+                    </div>
+
+                    <div>
+                      <span className="stat-label">Joining Date</span>
+                      <div style={{ color: 'var(--color-text-primary)' }}>{employee.joiningDate ? new Date(employee.joiningDate).toLocaleDateString() : '—'}</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right Info Column */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
+                  <h3 style={{ fontSize: 'var(--text-sm)', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-text-muted)' }}>
+                    Profile & Expertise
+                  </h3>
+
+                  <div style={{ backgroundColor: 'var(--color-bg-subtle)', padding: 'var(--space-4)', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)', display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
+                    <div>
+                      <span className="stat-label">About</span>
+                      <p style={{ margin: 'var(--space-1) 0 0', color: 'var(--color-text-secondary)', fontSize: 'var(--text-sm)', whiteSpace: 'pre-wrap' }}>
+                        {employee.about || 'No bio provided yet.'}
+                      </p>
+                    </div>
+
+                    <div>
+                      <span className="stat-label">Skills</span>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-1)', marginTop: 'var(--space-1)' }}>
+                        {employee.skills && employee.skills.length > 0 ? (
+                          employee.skills.map((skill, idx) => (
+                            <span key={idx} className="badge badge-info" style={{ fontSize: '11px' }}>
+                              {skill}
+                            </span>
+                          ))
+                        ) : (
+                          <span style={{ color: 'var(--color-text-muted)', fontSize: 'var(--text-xs)' }}>None listed</span>
+                        )}
+                      </div>
+                    </div>
+
+                    <div>
+                      <span className="stat-label">Certifications</span>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-1)', marginTop: 'var(--space-1)' }}>
+                        {employee.certifications && employee.certifications.length > 0 ? (
+                          employee.certifications.map((cert, idx) => (
+                            <span key={idx} className="badge badge-neutral" style={{ fontSize: '11px' }}>
+                              {cert}
+                            </span>
+                          ))
+                        ) : (
+                          <span style={{ color: 'var(--color-text-muted)', fontSize: 'var(--text-xs)' }}>None listed</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
-
-              <div>
-                <strong>Certifications:</strong>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem', marginTop: '0.25rem' }}>
-                  {employee.certifications && employee.certifications.length > 0 ? (
-                    employee.certifications.map((cert, idx) => (
-                      <span key={idx} style={{ background: '#eef2f6', padding: '0.2rem 0.5rem', borderRadius: '12px', fontSize: '0.85rem' }}>
-                        {cert}
-                      </span>
-                    ))
-                  ) : (
-                    <span style={{ color: '#888', fontSize: '0.9rem' }}>None listed</span>
-                  )}
-                </div>
-              </div>
-            </div>
+            )}
           </div>
         )}
-      </div>
-    </div>
+      </main>
+    </>
   );
 };
 

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Navbar } from '../components/layout/Navbar';
 import { timeOffService } from '../services/timeoff.service';
 import { TimeOffRequestList } from '../components/timeoff/TimeOffRequestList';
 import { TimeOffRequestDetails } from '../components/timeoff/TimeOffRequestDetails';
@@ -11,6 +12,7 @@ export const TimeOffManagementPage: React.FC = () => {
   const [requests, setRequests] = useState<TimeOffRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [feedbackSuccess, setFeedbackSuccess] = useState<string | null>(null);
 
   // Search & Filter state
   const [searchQuery, setSearchQuery] = useState('');
@@ -41,25 +43,39 @@ export const TimeOffManagementPage: React.FC = () => {
   }, []);
 
   const handleApprove = async (id: string) => {
-    await timeOffService.approveTimeOffRequest(id);
-    setSelectedRequest(null);
-    fetchAllRequests(); // Refresh list after backend response
+    try {
+      setFeedbackSuccess(null);
+      await timeOffService.approveTimeOffRequest(id);
+      setFeedbackSuccess('✅ Leave request approved successfully. Attendance records have been synced.');
+      setSelectedRequest(null);
+      await fetchAllRequests();
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      }
+    }
   };
 
   const handleReject = async (id: string) => {
-    await timeOffService.rejectTimeOffRequest(id);
-    setSelectedRequest(null);
-    fetchAllRequests(); // Refresh list after backend response
+    try {
+      setFeedbackSuccess(null);
+      await timeOffService.rejectTimeOffRequest(id);
+      setFeedbackSuccess('❌ Leave request rejected.');
+      setSelectedRequest(null);
+      await fetchAllRequests();
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      }
+    }
   };
 
   // Filter requests dynamically by search query & status filter
   const filteredRequests = requests.filter((req) => {
-    // Status filter
     if (statusFilter !== 'ALL' && req.status !== statusFilter) {
       return false;
     }
 
-    // Search query
     const q = searchQuery.toLowerCase().trim();
     if (!q) return true;
 
@@ -75,152 +91,135 @@ export const TimeOffManagementPage: React.FC = () => {
   const pendingCount = requests.filter((r) => r.status === 'PENDING').length;
 
   return (
-    <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '2rem', fontFamily: 'system-ui, sans-serif' }}>
-      {/* Header & Back Link */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
-        <div>
-          <button
-            onClick={() => navigate('/admin')}
-            style={{ marginBottom: '0.5rem', background: 'none', border: 'none', color: '#0066cc', cursor: 'pointer', textDecoration: 'underline' }}
-          >
-            ← Back to Admin Dashboard
-          </button>
-          <h1 style={{ margin: 0 }}>Time Off & Leave Requests</h1>
-        </div>
+    <>
+      <Navbar portalTitle="Administration" />
 
-        <button
-          onClick={fetchAllRequests}
-          style={{
-            padding: '0.55rem 1.1rem',
-            backgroundColor: '#0066cc',
-            color: '#fff',
-            border: 'none',
-            borderRadius: '6px',
-            cursor: 'pointer',
-            fontWeight: 500,
-          }}
-        >
-          🔄 Refresh Requests
-        </button>
-      </div>
+      <main className="page-container">
+        {/* Header & Back Link */}
+        <div className="page-header">
+          <div className="page-title-group">
+            <button
+              onClick={() => navigate('/admin')}
+              className="back-link"
+            >
+              ← Back to Dashboard
+            </button>
+            <h1>Time Off & Leave Requests</h1>
+            <p>Review leave applications, manage employee time-off, and track approvals</p>
+          </div>
 
-      {/* Control Bar: Search & Status Filters */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem', backgroundColor: '#fff', padding: '1.25rem', borderRadius: '8px', border: '1px solid #e0e0e0' }}>
-        {/* Status Filter Buttons */}
-        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-          <button
-            onClick={() => setStatusFilter('ALL')}
-            style={{
-              padding: '0.4rem 0.85rem',
-              borderRadius: '20px',
-              border: '1px solid #ccc',
-              backgroundColor: statusFilter === 'ALL' ? '#0066cc' : '#f8f9fa',
-              color: statusFilter === 'ALL' ? '#fff' : '#333',
-              cursor: 'pointer',
-              fontWeight: 500,
-              fontSize: '0.85rem',
-            }}
-          >
-            All ({requests.length})
-          </button>
-
-          <button
-            onClick={() => setStatusFilter('PENDING')}
-            style={{
-              padding: '0.4rem 0.85rem',
-              borderRadius: '20px',
-              border: '1px solid #ccc',
-              backgroundColor: statusFilter === 'PENDING' ? '#b06000' : '#fef7e0',
-              color: statusFilter === 'PENDING' ? '#fff' : '#b06000',
-              cursor: 'pointer',
-              fontWeight: 600,
-              fontSize: '0.85rem',
-            }}
-          >
-            Pending ({pendingCount})
-          </button>
-
-          <button
-            onClick={() => setStatusFilter('APPROVED')}
-            style={{
-              padding: '0.4rem 0.85rem',
-              borderRadius: '20px',
-              border: '1px solid #ccc',
-              backgroundColor: statusFilter === 'APPROVED' ? '#137333' : '#e6f4ea',
-              color: statusFilter === 'APPROVED' ? '#fff' : '#137333',
-              cursor: 'pointer',
-              fontWeight: 500,
-              fontSize: '0.85rem',
-            }}
-          >
-            Approved
-          </button>
-
-          <button
-            onClick={() => setStatusFilter('REJECTED')}
-            style={{
-              padding: '0.4rem 0.85rem',
-              borderRadius: '20px',
-              border: '1px solid #ccc',
-              backgroundColor: statusFilter === 'REJECTED' ? '#c5221f' : '#fce8e6',
-              color: statusFilter === 'REJECTED' ? '#fff' : '#c5221f',
-              cursor: 'pointer',
-              fontWeight: 500,
-              fontSize: '0.85rem',
-            }}
-          >
-            Rejected
-          </button>
-        </div>
-
-        {/* Search Input */}
-        <div style={{ flex: 1, minWidth: '250px', maxWidth: '400px' }}>
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search employee, email, department, type..."
-            style={{ width: '100%', padding: '0.55rem 0.85rem', borderRadius: '6px', border: '1px solid #ccc', boxSizing: 'border-box' }}
-          />
-        </div>
-      </div>
-
-      {/* Selected Request Modal */}
-      {selectedRequest && (
-        <TimeOffRequestDetails
-          request={selectedRequest}
-          onClose={() => setSelectedRequest(null)}
-          onApprove={handleApprove}
-          onReject={handleReject}
-          isAdminView={true}
-        />
-      )}
-
-      {/* Main Request List / States */}
-      {loading ? (
-        <div style={{ padding: '3rem', textAlign: 'center', color: '#666' }}>Loading leave requests...</div>
-      ) : error ? (
-        <div style={{ padding: '2rem', textAlign: 'center', backgroundColor: '#ffe6e6', borderRadius: '8px', color: '#cc0000' }}>
-          <p style={{ margin: '0 0 1rem' }}>{error}</p>
           <button
             onClick={fetchAllRequests}
-            style={{ padding: '0.5rem 1rem', backgroundColor: '#0066cc', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+            disabled={loading}
+            className="btn btn-secondary btn-sm"
           >
-            Retry
+            🔄 {loading ? 'Refreshing...' : 'Refresh Requests'}
           </button>
         </div>
-      ) : filteredRequests.length === 0 ? (
-        <div style={{ padding: '3rem', textAlign: 'center', backgroundColor: '#f9f9f9', borderRadius: '8px', color: '#777' }}>
-          No time-off requests match your filter criteria.
+
+        {/* Feedback Success / Error Banners */}
+        {feedbackSuccess && (
+          <div className="alert alert-success" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span>{feedbackSuccess}</span>
+            <button onClick={() => setFeedbackSuccess(null)} className="btn btn-sm btn-secondary">
+              Dismiss
+            </button>
+          </div>
+        )}
+
+        {error && (
+          <div className="alert alert-error" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span>⚠️ {error}</span>
+            <button onClick={() => setError(null)} className="btn btn-sm btn-danger">
+              Dismiss
+            </button>
+          </div>
+        )}
+
+        {/* Control Bar: Search & Status Filters */}
+        <div className="card card-padding" style={{ marginBottom: 'var(--space-6)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 'var(--space-4)' }}>
+          {/* Status Filter Buttons */}
+          <div style={{ display: 'flex', gap: 'var(--space-2)', flexWrap: 'wrap' }}>
+            <button
+              onClick={() => setStatusFilter('ALL')}
+              className={`btn btn-sm ${statusFilter === 'ALL' ? 'btn-primary' : 'btn-secondary'}`}
+            >
+              All ({requests.length})
+            </button>
+
+            <button
+              onClick={() => setStatusFilter('PENDING')}
+              className={`btn btn-sm ${statusFilter === 'PENDING' ? 'btn-primary' : 'btn-secondary'}`}
+              style={{ color: statusFilter === 'PENDING' ? undefined : 'var(--color-warning)' }}
+            >
+              ⏳ Pending ({pendingCount})
+            </button>
+
+            <button
+              onClick={() => setStatusFilter('APPROVED')}
+              className={`btn btn-sm ${statusFilter === 'APPROVED' ? 'btn-primary' : 'btn-secondary'}`}
+              style={{ color: statusFilter === 'APPROVED' ? undefined : 'var(--color-success)' }}
+            >
+              ✅ Approved
+            </button>
+
+            <button
+              onClick={() => setStatusFilter('REJECTED')}
+              className={`btn btn-sm ${statusFilter === 'REJECTED' ? 'btn-primary' : 'btn-secondary'}`}
+              style={{ color: statusFilter === 'REJECTED' ? undefined : 'var(--color-error)' }}
+            >
+              ❌ Rejected
+            </button>
+          </div>
+
+          {/* Search Input */}
+          <div style={{ flex: 1, minWidth: '240px', maxWidth: '380px' }}>
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search employee, department, reason..."
+              className="form-input"
+            />
+          </div>
         </div>
-      ) : (
-        <TimeOffRequestList
-          requests={filteredRequests}
-          showEmployeeInfo={true}
-          onSelectRequest={(req) => setSelectedRequest(req)}
-        />
-      )}
-    </div>
+
+        {/* Selected Request Modal */}
+        {selectedRequest && (
+          <TimeOffRequestDetails
+            request={selectedRequest}
+            onClose={() => setSelectedRequest(null)}
+            onApprove={handleApprove}
+            onReject={handleReject}
+            isAdminView={true}
+          />
+        )}
+
+        {/* Main Request List / States */}
+        {loading ? (
+          <div className="card card-padding">
+            {[1, 2, 3].map((i) => (
+              <div key={i} style={{ padding: 'var(--space-3) 0', borderBottom: '1px solid var(--color-border)' }}>
+                <div className="skeleton skeleton-text" style={{ width: '30%' }} />
+                <div className="skeleton skeleton-text" style={{ width: '70%' }} />
+              </div>
+            ))}
+          </div>
+        ) : filteredRequests.length === 0 ? (
+          <div className="empty-state">
+            <div className="empty-state-icon">🌴</div>
+            <div className="empty-state-title">No Requests Found</div>
+            <p className="empty-state-desc">No time-off requests match your current filter criteria.</p>
+          </div>
+        ) : (
+          <TimeOffRequestList
+            requests={filteredRequests}
+            showEmployeeInfo={true}
+            onSelectRequest={(req) => setSelectedRequest(req)}
+          />
+        )}
+      </main>
+    </>
   );
 };
 

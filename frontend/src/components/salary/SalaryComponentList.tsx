@@ -29,78 +29,94 @@ export const SalaryComponentList: React.FC<SalaryComponentListProps> = ({
   };
 
   const renderTable = (items: SalaryComponent[], categoryTitle: string, isEarning: boolean) => (
-    <div style={{ marginBottom: '1.5rem', border: '1px solid #e0e0e0', borderRadius: '8px', overflow: 'hidden', backgroundColor: '#fff' }}>
-      <div style={{ backgroundColor: isEarning ? '#e6f4ea' : '#fce8e6', padding: '0.75rem 1rem', borderBottom: '1px solid #e0e0e0', fontWeight: 'bold', color: isEarning ? '#137333' : '#c5221f', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+    <div className="card" style={{ marginBottom: 'var(--space-6)', overflow: 'hidden' }}>
+      <div
+        style={{
+          backgroundColor: isEarning ? 'var(--color-success-bg)' : 'var(--color-error-bg)',
+          padding: 'var(--space-3) var(--space-5)',
+          borderBottom: `1px solid ${isEarning ? 'var(--color-success-border)' : 'var(--color-error-border)'}`,
+          fontWeight: 600,
+          color: isEarning ? 'var(--color-success-text)' : 'var(--color-error-text)',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          fontSize: 'var(--text-sm)',
+        }}
+      >
         <span>{categoryTitle}</span>
-        <span style={{ fontSize: '0.85rem' }}>
+        <span style={{ fontFamily: 'var(--font-mono)' }}>
           Total: ₹{items.reduce((sum, item) => sum + computeAmount(item), 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
         </span>
       </div>
 
       {items.length === 0 ? (
-        <div style={{ padding: '1.5rem', textAlign: 'center', color: '#888', fontSize: '0.9rem' }}>
+        <div style={{ padding: 'var(--space-6)', textAlign: 'center', color: 'var(--color-text-muted)', fontSize: 'var(--text-sm)' }}>
           No {categoryTitle.toLowerCase()} configured yet.
         </div>
       ) : (
-        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.9rem' }}>
-          <thead>
-            <tr style={{ backgroundColor: '#f8f9fa', borderBottom: '1px solid #e0e0e0', color: '#555' }}>
-              <th style={{ padding: '0.65rem 1rem' }}>Component Name</th>
-              <th style={{ padding: '0.65rem 1rem' }}>Type</th>
-              <th style={{ padding: '0.65rem 1rem' }}>Configured Value</th>
-              <th style={{ padding: '0.65rem 1rem' }}>Calculated Amount (Monthly)</th>
-              <th style={{ padding: '0.65rem 1rem', textAlign: 'right' }}>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {items.map((c) => (
-              <tr key={c.id} style={{ borderBottom: '1px solid #f0f0f0' }}>
-                <td style={{ padding: '0.75rem 1rem', fontWeight: 500, color: '#222' }}>{c.name}</td>
-                <td style={{ padding: '0.75rem 1rem', color: '#555' }}>
-                  <span style={{ fontSize: '0.8rem', padding: '0.2rem 0.5rem', borderRadius: '4px', backgroundColor: '#f0f0f0', fontWeight: 500 }}>
-                    {c.calculationType === 'PERCENTAGE' ? 'Percentage' : 'Fixed'}
-                  </span>
-                </td>
-                <td style={{ padding: '0.75rem 1rem', color: '#333' }}>
-                  {c.calculationType === 'PERCENTAGE' ? `${c.value}%` : `₹${c.value.toLocaleString()}`}
-                </td>
-                <td style={{ padding: '0.75rem 1rem', fontWeight: 600, color: isEarning ? '#137333' : '#c5221f' }}>
-                  ₹{computeAmount(c).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                </td>
-                <td style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>
-                  <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
-                    <button
-                      onClick={() => onEditComponent(c)}
-                      disabled={isProcessing}
-                      style={{ padding: '0.25rem 0.6rem', fontSize: '0.8rem', backgroundColor: '#eef2f6', color: '#0066cc', border: '1px solid #0066cc', borderRadius: '4px', cursor: 'pointer' }}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => {
-                        if (window.confirm(`Are you sure you want to delete component "${c.name}"?`)) {
-                          onDeleteComponent(c.id);
-                        }
-                      }}
-                      disabled={isProcessing}
-                      style={{ padding: '0.25rem 0.6rem', fontSize: '0.8rem', backgroundColor: '#ffe6e6', color: '#cc0000', border: '1px solid #cc0000', borderRadius: '4px', cursor: 'pointer' }}
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </td>
+        <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+          <table className="table">
+            <thead>
+              <tr>
+                <th>Component Name</th>
+                <th>Type</th>
+                <th>Configured Value</th>
+                <th>Calculated Amount</th>
+                <th style={{ textAlign: 'right' }}>Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {items.map((c) => (
+                <tr key={c.id}>
+                  <td style={{ fontWeight: 500 }}>{c.name}</td>
+                  <td>
+                    <span className="badge badge-neutral" style={{ fontSize: 'var(--text-xs)' }}>
+                      {c.calculationType === 'PERCENTAGE' ? '% Base' : 'Fixed'}
+                    </span>
+                  </td>
+                  <td style={{ color: 'var(--color-text-secondary)' }}>
+                    {c.calculationType === 'PERCENTAGE' ? `${c.value}%` : `₹${c.value.toLocaleString()}`}
+                  </td>
+                  <td style={{ fontWeight: 600, color: isEarning ? 'var(--color-success)' : 'var(--color-error)', fontFamily: 'var(--font-mono)' }}>
+                    {isEarning ? '+' : '-'}₹{computeAmount(c).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </td>
+                  <td style={{ textAlign: 'right' }}>
+                    <div style={{ display: 'flex', gap: 'var(--space-2)', justifyContent: 'flex-end' }}>
+                      <button
+                        onClick={() => onEditComponent(c)}
+                        disabled={isProcessing}
+                        className="btn btn-outline btn-sm"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => {
+                          if (window.confirm(`Are you sure you want to delete component "${c.name}"?`)) {
+                            onDeleteComponent(c.id);
+                          }
+                        }}
+                        disabled={isProcessing}
+                        className="btn btn-danger btn-sm"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   );
 
   return (
     <div>
-      {renderTable(earnings, 'Earnings', true)}
-      {renderTable(deductions, 'Deductions', false)}
+      {renderTable(earnings, 'Earnings & Allowances', true)}
+      {renderTable(deductions, 'Deductions & Taxes', false)}
     </div>
   );
 };
+
+export default SalaryComponentList;

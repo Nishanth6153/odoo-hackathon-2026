@@ -12,17 +12,19 @@ import { MyAttendancePage } from './pages/MyAttendancePage';
 import { AttendancePage } from './pages/AttendancePage';
 import { MyTimeOffPage } from './pages/MyTimeOffPage';
 import { TimeOffManagementPage } from './pages/TimeOffManagementPage';
-<<<<<<< HEAD
 import { MyPayrollPage } from './pages/MyPayrollPage';
-=======
->>>>>>> origin/main
 import { SalaryPage } from './pages/SalaryPage';
 
 const RootRedirect: React.FC = () => {
   const { user, loading } = useAuth();
 
   if (loading) {
-    return <div style={{ padding: '2rem', textAlign: 'center' }}>Loading session...</div>;
+    return (
+      <div className="loading-box" style={{ minHeight: '100vh' }}>
+        <div className="spinner" />
+        <span>Loading session...</span>
+      </div>
+    );
   }
 
   if (!user) {
@@ -131,7 +133,6 @@ function App() {
               </ProtectedRoute>
             }
           />
-<<<<<<< HEAD
           <Route
             path="/employee/payroll"
             element={
@@ -140,8 +141,6 @@ function App() {
               </ProtectedRoute>
             }
           />
-=======
->>>>>>> origin/main
 
           {/* Fallback redirect */}
           <Route path="*" element={<Navigate to="/" replace />} />

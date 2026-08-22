@@ -33,9 +33,13 @@ export const LeaveBalanceCard: React.FC<LeaveBalanceCardProps> = ({ balances, lo
       {cards.map((card, idx) => (
         <div key={idx} className="stat-card">
           <span className="stat-label">{card.title}</span>
-          <div className="stat-value" style={{ color: card.color }}>
-            {loading ? '...' : card.value}
-          </div>
+          {loading ? (
+            <div className="skeleton skeleton-stat" style={{ width: '50%' }} />
+          ) : (
+            <div className="stat-value" style={{ color: card.color }}>
+              {card.value}
+            </div>
+          )}
           <span className="stat-subtext">{card.subtext}</span>
         </div>
       ))}

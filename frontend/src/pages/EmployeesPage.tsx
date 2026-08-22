@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Navbar } from '../components/layout/Navbar';
 import { employeeService } from '../services/employee.service';
 import { EmployeeCard } from '../components/employees/EmployeeCard';
 import { EmployeeForm, type EmployeeFormData } from '../components/employees/EmployeeForm';
@@ -44,10 +45,7 @@ export const EmployeesPage: React.FC = () => {
       const res = await employeeService.createEmployee({
         name: formData.name,
         email: formData.email,
-<<<<<<< HEAD
         password: formData.password || undefined,
-=======
->>>>>>> origin/main
         phone: formData.phone,
         department: formData.department,
         designation: formData.designation,
@@ -80,112 +78,127 @@ export const EmployeesPage: React.FC = () => {
   });
 
   return (
-    <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '2rem' }}>
-      {/* Header with Nav back to Dashboard and Add Button */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
-        <div>
-          <button
-            onClick={() => navigate('/admin')}
-            style={{ marginBottom: '0.5rem', background: 'none', border: 'none', color: '#0066cc', cursor: 'pointer', textDecoration: 'underline' }}
-          >
-            ← Back to Admin Dashboard
-          </button>
-          <h1 style={{ margin: 0 }}>Employees Directory</h1>
-        </div>
+    <>
+      <Navbar portalTitle="Administration" />
 
-        <button
-          onClick={() => {
-            setCreatedResult(null);
-            setCreateApiError(null);
-            setShowAddForm(true);
-          }}
-          style={{
-            padding: '0.6rem 1.25rem',
-            backgroundColor: '#0066cc',
-            color: '#fff',
-            border: 'none',
-            borderRadius: '6px',
-            cursor: 'pointer',
-            fontWeight: 600,
-          }}
-        >
-          + Add Employee
-        </button>
-      </div>
-
-      {/* Generated Credentials Alert Banner if recently created */}
-      {createdResult && (createdResult.loginId || createdResult.tempPassword) && (
-        <div style={{ padding: '1rem', backgroundColor: '#e6f4ea', border: '1px solid #34a853', borderRadius: '6px', marginBottom: '1.5rem' }}>
-          <h4 style={{ margin: '0 0 0.5rem', color: '#137333' }}>Employee Created Successfully</h4>
-          {createdResult.loginId && <div><strong>Login ID:</strong> {createdResult.loginId}</div>}
-          {createdResult.tempPassword && <div><strong>Temporary Password:</strong> {createdResult.tempPassword}</div>}
-          <button
-            onClick={() => setCreatedResult(null)}
-            style={{ marginTop: '0.5rem', fontSize: '0.8rem', padding: '0.2rem 0.5rem', cursor: 'pointer' }}
-          >
-            Dismiss
-          </button>
-        </div>
-      )}
-
-      {/* Search Bar */}
-      <div style={{ marginBottom: '1.5rem' }}>
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Search by name, email, department, designation, or login ID..."
-          style={{
-            width: '100%',
-            padding: '0.75rem 1rem',
-            fontSize: '1rem',
-            borderRadius: '6px',
-            border: '1px solid #ccc',
-            boxSizing: 'border-box',
-          }}
-        />
-      </div>
-
-      {/* Add Employee Modal / Drawer */}
-      {showAddForm && (
-        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '1rem' }}>
-          <div style={{ backgroundColor: '#fff', padding: '2rem', borderRadius: '8px', maxWidth: '550px', width: '100%', maxHeight: '90vh', overflowY: 'auto' }}>
-            <h2 style={{ marginTop: 0 }}>Add New Employee</h2>
-            <EmployeeForm
-              onSubmit={handleCreateEmployee}
-              onCancel={() => setShowAddForm(false)}
-              submitButtonText="Create Employee"
-              apiError={createApiError}
-            />
+      <main className="page-container">
+        {/* Header */}
+        <div className="page-header">
+          <div className="page-title-group">
+            <button
+              onClick={() => navigate('/admin')}
+              className="back-link"
+            >
+              ← Back to Dashboard
+            </button>
+            <h1>Employees Directory</h1>
+            <p>Manage employee records, organizational departments, and profiles</p>
           </div>
-        </div>
-      )}
 
-      {/* Main Content Area: Loading / Error / Empty / Grid */}
-      {loading ? (
-        <div style={{ padding: '3rem', textAlign: 'center', color: '#666' }}>Loading employees...</div>
-      ) : error ? (
-        <div style={{ padding: '2rem', textAlign: 'center', backgroundColor: '#ffe6e6', borderRadius: '8px', color: '#cc0000' }}>
-          <p style={{ margin: '0 0 1rem' }}>{error}</p>
           <button
-            onClick={fetchEmployees}
-            style={{ padding: '0.5rem 1rem', backgroundColor: '#0066cc', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+            onClick={() => {
+              setCreatedResult(null);
+              setCreateApiError(null);
+              setShowAddForm(true);
+            }}
+            className="btn btn-primary"
           >
-            Retry
+            + Add Employee
           </button>
         </div>
-      ) : filteredEmployees.length === 0 ? (
-        <div style={{ padding: '3rem', textAlign: 'center', color: '#777', backgroundColor: '#f9f9f9', borderRadius: '8px' }}>
-          {searchQuery ? 'No employees match your search criteria.' : 'No employees found.'}
+
+        {/* Created Alert Banner */}
+        {createdResult && (createdResult.loginId || createdResult.tempPassword) && (
+          <div className="alert alert-success" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div>
+              <strong>Employee Account Created: </strong>
+              <span>Login Email/ID: <strong style={{ fontFamily: 'var(--font-mono)' }}>{createdResult.loginId}</strong> | Temp Password: <strong style={{ fontFamily: 'var(--font-mono)' }}>{createdResult.tempPassword}</strong></span>
+            </div>
+            <button
+              onClick={() => setCreatedResult(null)}
+              className="btn btn-sm btn-secondary"
+            >
+              Dismiss
+            </button>
+          </div>
+        )}
+
+        {/* Search Bar */}
+        <div style={{ marginBottom: 'var(--space-6)' }}>
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search employees by name, email, department, designation, or ID..."
+            className="form-input"
+            style={{ padding: '0.75rem 1rem', fontSize: 'var(--text-base)' }}
+          />
         </div>
-      ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.25rem' }}>
-          {filteredEmployees.map((emp) => (
-            <EmployeeCard key={emp.id} employee={emp} />
-          ))}
-        </div>
-      )}
-    </div>
+
+        {/* Add Employee Modal */}
+        {showAddForm && (
+          <div className="modal-overlay" onClick={() => setShowAddForm(false)}>
+            <div className="modal-dialog" onClick={(e) => e.stopPropagation()}>
+              <div className="modal-dialog-header">
+                <h2 style={{ margin: 0, fontSize: 'var(--text-lg)', color: 'var(--color-text-primary)' }}>
+                  Add New Employee
+                </h2>
+                <button
+                  onClick={() => setShowAddForm(false)}
+                  style={{ background: 'none', border: 'none', fontSize: 'var(--text-xl)', cursor: 'pointer', color: 'var(--color-text-muted)', lineHeight: 1 }}
+                >
+                  ×
+                </button>
+              </div>
+
+              <div className="modal-dialog-body">
+                <EmployeeForm
+                  onSubmit={handleCreateEmployee}
+                  onCancel={() => setShowAddForm(false)}
+                  submitButtonText="Create Employee"
+                  apiError={createApiError}
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Main Content Area */}
+        {loading ? (
+          <div className="loading-box">
+            <div className="spinner" />
+            <span>Loading employee directory...</span>
+          </div>
+        ) : error ? (
+          <div className="alert alert-error" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span>{error}</span>
+            <button onClick={fetchEmployees} className="btn btn-sm btn-danger">
+              Retry
+            </button>
+          </div>
+        ) : filteredEmployees.length === 0 ? (
+          <div className="empty-state">
+            <div className="empty-state-icon">👥</div>
+            <div className="empty-state-title">No Employees Found</div>
+            <p className="empty-state-desc">
+              {searchQuery ? 'No employees matched your search query.' : 'No employee records are present in the system.'}
+            </p>
+          </div>
+        ) : (
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+              gap: 'var(--space-5)',
+            }}
+          >
+            {filteredEmployees.map((emp) => (
+              <EmployeeCard key={emp.id} employee={emp} />
+            ))}
+          </div>
+        )}
+      </main>
+    </>
   );
 };
 

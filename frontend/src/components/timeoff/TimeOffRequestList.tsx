@@ -54,59 +54,52 @@ export const TimeOffRequestList: React.FC<TimeOffRequestListProps> = ({
 
   if (!requests || requests.length === 0) {
     return (
-      <div style={{ padding: '2.5rem', textAlign: 'center', backgroundColor: '#f9f9f9', borderRadius: '8px', color: '#777' }}>
-        No time-off requests found.
+      <div className="empty-state">
+        <div className="empty-state-icon">🌴</div>
+        <div className="empty-state-title">No Leave Requests</div>
+        <p className="empty-state-desc">There are no leave requests recorded for this selection.</p>
       </div>
     );
   }
 
   return (
-    <div style={{ overflowX: 'auto', border: '1px solid #e0e0e0', borderRadius: '8px', backgroundColor: '#ffffff' }}>
-      <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.9rem' }}>
+    <div className="table-container">
+      <table className="table">
         <thead>
-          <tr style={{ backgroundColor: '#f5f7fa', borderBottom: '1px solid #e0e0e0' }}>
-            {showEmployeeInfo && <th style={{ padding: '0.85rem 1rem', fontWeight: 600, color: '#444' }}>Employee</th>}
-            <th style={{ padding: '0.85rem 1rem', fontWeight: 600, color: '#444' }}>Type</th>
-            <th style={{ padding: '0.85rem 1rem', fontWeight: 600, color: '#444' }}>Start Date</th>
-            <th style={{ padding: '0.85rem 1rem', fontWeight: 600, color: '#444' }}>End Date</th>
-            <th style={{ padding: '0.85rem 1rem', fontWeight: 600, color: '#444' }}>Days</th>
-            <th style={{ padding: '0.85rem 1rem', fontWeight: 600, color: '#444' }}>Reason</th>
-            <th style={{ padding: '0.85rem 1rem', fontWeight: 600, color: '#444' }}>Status</th>
-            <th style={{ padding: '0.85rem 1rem', fontWeight: 600, color: '#444' }}>Action</th>
+          <tr>
+            {showEmployeeInfo && <th>Employee</th>}
+            <th>Type</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Days</th>
+            <th>Reason</th>
+            <th>Status</th>
+            <th>Action</th>
           </tr>
         </thead>
         <tbody>
           {requests.map((req) => (
-            <tr key={req.id} style={{ borderBottom: '1px solid #f0f0f0' }}>
+            <tr key={req.id}>
               {showEmployeeInfo && (
-                <td style={{ padding: '0.85rem 1rem' }}>
-                  <div style={{ fontWeight: 500, color: '#222' }}>{req.employeeName || 'Employee'}</div>
-                  {req.employeeEmail && <div style={{ fontSize: '0.8rem', color: '#666' }}>{req.employeeEmail}</div>}
+                <td>
+                  <div style={{ fontWeight: 500, color: 'var(--color-text-primary)' }}>{req.employeeName || 'Employee'}</div>
+                  {req.employeeEmail && <div style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)' }}>{req.employeeEmail}</div>}
                 </td>
               )}
-              <td style={{ padding: '0.85rem 1rem', fontWeight: 500, color: '#333' }}>{formatLeaveType(req.type)}</td>
-              <td style={{ padding: '0.85rem 1rem', color: '#555' }}>{formatDate(req.startDate)}</td>
-              <td style={{ padding: '0.85rem 1rem', color: '#555' }}>{formatDate(req.endDate)}</td>
-              <td style={{ padding: '0.85rem 1rem', fontWeight: 600, color: '#333' }}>{calculateDays(req)}</td>
-              <td style={{ padding: '0.85rem 1rem', color: '#666', maxWidth: '200px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              <td style={{ fontWeight: 500 }}>{formatLeaveType(req.type)}</td>
+              <td style={{ color: 'var(--color-text-secondary)' }}>{formatDate(req.startDate)}</td>
+              <td style={{ color: 'var(--color-text-secondary)' }}>{formatDate(req.endDate)}</td>
+              <td style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>{calculateDays(req)}</td>
+              <td style={{ color: 'var(--color-text-muted)', maxWidth: '200px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                 {req.reason}
               </td>
-              <td style={{ padding: '0.85rem 1rem' }}>
+              <td>
                 <TimeOffStatusBadge status={req.status} />
               </td>
-              <td style={{ padding: '0.85rem 1rem' }}>
+              <td>
                 <button
                   onClick={() => onSelectRequest?.(req)}
-                  style={{
-                    padding: '0.35rem 0.75rem',
-                    backgroundColor: '#eef2f6',
-                    border: '1px solid #0066cc',
-                    color: '#0066cc',
-                    borderRadius: '4px',
-                    cursor: 'pointer',
-                    fontSize: '0.8rem',
-                    fontWeight: 500,
-                  }}
+                  className="btn btn-outline btn-sm"
                 >
                   View Details
                 </button>
@@ -118,3 +111,5 @@ export const TimeOffRequestList: React.FC<TimeOffRequestListProps> = ({
     </div>
   );
 };
+
+export default TimeOffRequestList;

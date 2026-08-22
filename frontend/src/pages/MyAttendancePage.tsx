@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Navbar } from '../components/layout/Navbar';
 import { attendanceService } from '../services/attendance.service';
 import { CheckInOutCard } from '../components/attendance/CheckInOutCard';
 import { AttendanceTable } from '../components/attendance/AttendanceTable';
@@ -66,97 +67,100 @@ export const MyAttendancePage: React.FC = () => {
   // Calculate summary metrics
   const totalDays = monthRecords.length;
   const presentDays = monthRecords.filter((r) => r.status === 'PRESENT').length;
-  const leaveDays = monthRecords.filter((r) => r.status === 'ON_LEAVE').length;
+  const leaveDays = monthRecords.filter((r) => r.status === 'ON_LEAVE' || r.status === 'LEAVE').length;
   const absentDays = monthRecords.filter((r) => r.status === 'ABSENT').length;
 
   return (
-    <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '2rem', fontFamily: 'system-ui, sans-serif' }}>
-      {/* Header */}
-      <button
-        onClick={() => navigate('/employee')}
-        style={{ marginBottom: '1rem', background: 'none', border: 'none', color: '#0066cc', cursor: 'pointer', textDecoration: 'underline' }}
-      >
-        ← Back to Employee Dashboard
-      </button>
+    <>
+      <Navbar portalTitle="Employee Workspace" />
 
-      <h1 style={{ marginTop: 0, marginBottom: '1.5rem' }}>My Attendance</h1>
-
-      {/* Check In / Check Out Card */}
-      <div style={{ marginBottom: '2rem' }}>
-        <CheckInOutCard todayRecord={todayRecord} onStatusChange={fetchAttendanceData} />
-      </div>
-
-      {/* Monthly Attendance Section */}
-      <div style={{ border: '1px solid #e0e0e0', borderRadius: '12px', padding: '1.75rem', backgroundColor: '#ffffff' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
-          <h2 style={{ margin: 0, fontSize: '1.25rem' }}>Attendance History</h2>
-
-          {/* Month Selector */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+      <main className="page-container">
+        {/* Header */}
+        <div className="page-header">
+          <div className="page-title-group">
             <button
-              onClick={() => setMonthOffset((prev) => prev - 1)}
-              style={{ padding: '0.4rem 0.8rem', backgroundColor: '#f0f0f0', border: '1px solid #ccc', borderRadius: '4px', cursor: 'pointer' }}
+              onClick={() => navigate('/employee')}
+              className="back-link"
             >
-              ◀ Previous Month
+              ← Back to Dashboard
             </button>
-            <span style={{ fontWeight: 600, minWidth: '130px', textAlign: 'center' }}>
-              {selectedMonthDate.toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}
-            </span>
-            <button
-              onClick={() => setMonthOffset((prev) => prev + 1)}
-              disabled={monthOffset >= 0}
-              style={{
-                padding: '0.4rem 0.8rem',
-                backgroundColor: monthOffset >= 0 ? '#f5f5f5' : '#f0f0f0',
-                color: monthOffset >= 0 ? '#aaa' : '#000',
-                border: '1px solid #ccc',
-                borderRadius: '4px',
-                cursor: monthOffset >= 0 ? 'not-allowed' : 'pointer',
-              }}
-            >
-              Next Month ▶
-            </button>
+            <h1>My Attendance</h1>
+            <p>Punch in/out, view daily work hours, and inspect monthly attendance log</p>
           </div>
         </div>
 
-        {/* Summary Metrics */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
-          <div style={{ backgroundColor: '#f8f9fa', padding: '1rem', borderRadius: '8px', textAlign: 'center', border: '1px solid #e9ecef' }}>
-            <span style={{ fontSize: '0.8rem', color: '#666' }}>Total Logged Days</span>
-            <strong style={{ display: 'block', fontSize: '1.5rem', color: '#222', marginTop: '0.2rem' }}>{totalDays}</strong>
-          </div>
-          <div style={{ backgroundColor: '#e6f4ea', padding: '1rem', borderRadius: '8px', textAlign: 'center', border: '1px solid #ceebd6' }}>
-            <span style={{ fontSize: '0.8rem', color: '#137333' }}>Present Days</span>
-            <strong style={{ display: 'block', fontSize: '1.5rem', color: '#137333', marginTop: '0.2rem' }}>{presentDays}</strong>
-          </div>
-          <div style={{ backgroundColor: '#e8f0fe', padding: '1rem', borderRadius: '8px', textAlign: 'center', border: '1px solid #d2e3fc' }}>
-            <span style={{ fontSize: '0.8rem', color: '#1a73e8' }}>Leave Days</span>
-            <strong style={{ display: 'block', fontSize: '1.5rem', color: '#1a73e8', marginTop: '0.2rem' }}>{leaveDays}</strong>
-          </div>
-          <div style={{ backgroundColor: '#fef7e0', padding: '1rem', borderRadius: '8px', textAlign: 'center', border: '1px solid #fde7ac' }}>
-            <span style={{ fontSize: '0.8rem', color: '#b06000' }}>Absent Days</span>
-            <strong style={{ display: 'block', fontSize: '1.5rem', color: '#b06000', marginTop: '0.2rem' }}>{absentDays}</strong>
-          </div>
+        {/* Check In / Check Out Card */}
+        <div style={{ marginBottom: 'var(--space-6)' }}>
+          <CheckInOutCard todayRecord={todayRecord} onStatusChange={fetchAttendanceData} />
         </div>
 
-        {/* Content Table / States */}
-        {loading ? (
-          <div style={{ padding: '2.5rem', textAlign: 'center', color: '#666' }}>Loading attendance records...</div>
-        ) : error ? (
-          <div style={{ padding: '2rem', textAlign: 'center', backgroundColor: '#ffe6e6', borderRadius: '8px', color: '#cc0000' }}>
-            <p style={{ margin: '0 0 1rem' }}>{error}</p>
-            <button
-              onClick={fetchAttendanceData}
-              style={{ padding: '0.5rem 1rem', backgroundColor: '#0066cc', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
-            >
-              Retry
-            </button>
+        {/* Monthly Attendance Section */}
+        <div className="card card-padding">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-5)', flexWrap: 'wrap', gap: 'var(--space-4)' }}>
+            <h2 style={{ margin: 0, fontSize: 'var(--text-base)', color: 'var(--color-text-primary)' }}>
+              Monthly History
+            </h2>
+
+            {/* Month Selector */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
+              <button
+                onClick={() => setMonthOffset((prev) => prev - 1)}
+                className="btn btn-secondary btn-sm"
+              >
+                ◀ Prev Month
+              </button>
+              <span style={{ fontWeight: 600, minWidth: '140px', textAlign: 'center', fontSize: 'var(--text-sm)' }}>
+                {selectedMonthDate.toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}
+              </span>
+              <button
+                onClick={() => setMonthOffset((prev) => prev + 1)}
+                disabled={monthOffset >= 0}
+                className="btn btn-secondary btn-sm"
+              >
+                Next Month ▶
+              </button>
+            </div>
           </div>
-        ) : (
-          <AttendanceTable records={monthRecords} />
-        )}
-      </div>
-    </div>
+
+          {/* Summary Metrics */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: 'var(--space-3)', marginBottom: 'var(--space-5)' }}>
+            <div className="stat-card" style={{ padding: 'var(--space-3)', textAlign: 'center' }}>
+              <span className="stat-label">Total Logged</span>
+              <div className="stat-value" style={{ fontSize: 'var(--text-xl)', color: 'var(--color-text-primary)' }}>{totalDays}</div>
+            </div>
+            <div className="stat-card" style={{ padding: 'var(--space-3)', textAlign: 'center' }}>
+              <span className="stat-label">Present</span>
+              <div className="stat-value" style={{ fontSize: 'var(--text-xl)', color: 'var(--color-success)' }}>{presentDays}</div>
+            </div>
+            <div className="stat-card" style={{ padding: 'var(--space-3)', textAlign: 'center' }}>
+              <span className="stat-label">On Leave</span>
+              <div className="stat-value" style={{ fontSize: 'var(--text-xl)', color: 'var(--color-info)' }}>{leaveDays}</div>
+            </div>
+            <div className="stat-card" style={{ padding: 'var(--space-3)', textAlign: 'center' }}>
+              <span className="stat-label">Absent</span>
+              <div className="stat-value" style={{ fontSize: 'var(--text-xl)', color: 'var(--color-error)' }}>{absentDays}</div>
+            </div>
+          </div>
+
+          {/* Content Table / States */}
+          {loading ? (
+            <div className="loading-box">
+              <div className="spinner" />
+              <span>Loading attendance history...</span>
+            </div>
+          ) : error ? (
+            <div className="alert alert-error" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span>{error}</span>
+              <button onClick={fetchAttendanceData} className="btn btn-sm btn-danger">
+                Retry
+              </button>
+            </div>
+          ) : (
+            <AttendanceTable records={monthRecords} />
+          )}
+        </div>
+      </main>
+    </>
   );
 };
 
