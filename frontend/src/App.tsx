@@ -12,6 +12,7 @@ import { MyAttendancePage } from './pages/MyAttendancePage';
 import { AttendancePage } from './pages/AttendancePage';
 import { MyTimeOffPage } from './pages/MyTimeOffPage';
 import { TimeOffManagementPage } from './pages/TimeOffManagementPage';
+import { MyPayrollPage } from './pages/MyPayrollPage';
 import { SalaryPage } from './pages/SalaryPage';
 
 const RootRedirect: React.FC = () => {
@@ -124,6 +125,14 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={['EMPLOYEE']}>
                 <MyTimeOffPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/employee/payroll"
+            element={
+              <ProtectedRoute allowedRoles={['EMPLOYEE']}>
+                <MyPayrollPage />
               </ProtectedRoute>
             }
           />

@@ -44,6 +44,7 @@ export const EmployeesPage: React.FC = () => {
       const res = await employeeService.createEmployee({
         name: formData.name,
         email: formData.email,
+        password: formData.password || undefined,
         phone: formData.phone,
         department: formData.department,
         designation: formData.designation,

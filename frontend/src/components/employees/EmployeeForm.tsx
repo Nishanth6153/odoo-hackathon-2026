@@ -7,6 +7,7 @@ import type { Employee, EmployeeStatus } from '../../types/employee.types';
 const employeeSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   email: z.string().min(1, 'Email is required').email('Invalid email address'),
+  password: z.string().optional(),
   phone: z.string().optional(),
   department: z.string().optional(),
   designation: z.string().optional(),
@@ -40,6 +41,7 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
     defaultValues: {
       name: initialValues?.name || '',
       email: initialValues?.email || '',
+      password: '',
       phone: initialValues?.phone || '',
       department: initialValues?.department || '',
       designation: initialValues?.designation || '',
@@ -87,6 +89,24 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
         />
         {errors.email && <span style={{ color: 'red', fontSize: '0.8rem' }}>{errors.email.message}</span>}
       </div>
+
+      {/* Password field - only for creating new employees */}
+      {!initialValues && (
+        <div>
+          <label htmlFor="password" style={{ display: 'block', marginBottom: '0.25rem', fontWeight: 500 }}>
+            Temporary Password
+          </label>
+          <input
+            id="password"
+            type="password"
+            {...register('password')}
+            placeholder="Leave blank for default: Employee@123"
+            style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc', boxSizing: 'border-box' }}
+            disabled={isSubmitting}
+          />
+          <span style={{ color: '#888', fontSize: '0.75rem' }}>Default: Employee@123</span>
+        </div>
+      )}
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
         <div>

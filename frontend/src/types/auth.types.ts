@@ -2,9 +2,11 @@ export type UserRole = "ADMIN" | "HR" | "EMPLOYEE";
 
 export interface User {
   id: string;
+  email?: string;
   loginId: string;
   name: string;
   role: UserRole;
+  isEmailVerified?: boolean;
 }
 
 export interface LoginResponse {
@@ -13,6 +15,7 @@ export interface LoginResponse {
 }
 
 export interface LoginCredentials {
-  loginId: string;
+  email?: string;
+  loginId?: string;
   password: string;
 }
