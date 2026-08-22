@@ -7,7 +7,6 @@ export const apiClient = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-<<<<<<< HEAD
   timeout: 15000,
 });
 
@@ -18,14 +17,6 @@ apiClient.interceptors.request.use(
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
     }
-=======
-  timeout: 10000,
-});
-
-// Request interceptor for attaching auth headers or logger in future
-apiClient.interceptors.request.use(
-  (config) => {
->>>>>>> origin/main
     return config;
   },
   (error) => {
@@ -33,7 +24,6 @@ apiClient.interceptors.request.use(
   }
 );
 
-<<<<<<< HEAD
 // Response interceptor for session expiration and 401 handling
 apiClient.interceptors.response.use(
   (response) => response,
@@ -45,12 +35,6 @@ apiClient.interceptors.response.use(
         window.location.href = '/login';
       }
     }
-=======
-// Response interceptor for generic error handling
-apiClient.interceptors.response.use(
-  (response) => response,
-  (error) => {
->>>>>>> origin/main
     return Promise.reject(error);
   }
 );

@@ -7,11 +7,7 @@ import { useAuth } from '../../context/AuthContext';
 import type { LoginCredentials } from '../../types/auth.types';
 
 const loginSchema = z.object({
-<<<<<<< HEAD
   loginId: z.string().min(1, 'Email is required').email('Invalid email address'),
-=======
-  loginId: z.string().min(1, 'Login ID is required'),
->>>>>>> origin/main
   password: z.string().min(1, 'Password is required'),
 });
 
@@ -25,6 +21,7 @@ export const LoginForm: React.FC = () => {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -59,71 +56,100 @@ export const LoginForm: React.FC = () => {
     }
   };
 
+  const fillCredentials = (email: string, pass: string) => {
+    setValue('loginId', email);
+    setValue('password', pass);
+  };
+
   return (
-    <div style={{ maxWidth: '400px', margin: '2rem auto', padding: '2rem', border: '1px solid #ccc', borderRadius: '8px' }}>
-      <h2>Login</h2>
+    <div className="card card-padding" style={{ maxWidth: '420px', width: '100%', margin: '0 auto', boxShadow: 'var(--shadow-lg)' }}>
+      {/* Brand Header */}
+      <div style={{ textAlign: 'center', marginBottom: 'var(--space-6)' }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--space-2)', marginBottom: 'var(--space-2)' }}>
+          <span className="nav-brand-badge" style={{ fontSize: 'var(--text-sm)', padding: '6px 12px' }}>DAYFLOW</span>
+          <span style={{ fontWeight: 700, fontSize: 'var(--text-lg)', color: 'var(--color-text-primary)' }}>HRMS</span>
+        </div>
+        <h2 style={{ fontSize: 'var(--text-xl)', color: 'var(--color-text-primary)' }}>Sign In to Your Portal</h2>
+        <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-muted)', marginTop: 'var(--space-1)' }}>
+          Enter your organization credentials to proceed
+        </p>
+      </div>
+
       {apiError && (
-        <div style={{ color: 'red', marginBottom: '1rem', padding: '0.5rem', background: '#ffe6e6', borderRadius: '4px' }}>
-          {apiError}
+        <div className="alert alert-error">
+          <span>⚠️ {apiError}</span>
         </div>
       )}
+
       <form onSubmit={handleSubmit(onSubmit)}>
-        <div style={{ marginBottom: '1rem' }}>
-          <label htmlFor="loginId" style={{ display: 'block', marginBottom: '0.5rem' }}>
-<<<<<<< HEAD
-            Email
+        <div className="form-group">
+          <label htmlFor="loginId" className="form-label">
+            Email Address
           </label>
           <input
             id="loginId"
             type="email"
-=======
-            Login ID
-          </label>
-          <input
-            id="loginId"
-            type="text"
->>>>>>> origin/main
+            placeholder="name@dayflow.local"
             {...register('loginId')}
-            style={{ width: '100%', padding: '0.5rem', boxSizing: 'border-box' }}
+            className="form-input"
             disabled={isSubmitting}
           />
           {errors.loginId && (
-            <span style={{ color: 'red', fontSize: '0.875rem' }}>{errors.loginId.message}</span>
+            <span className="form-error">{errors.loginId.message}</span>
           )}
         </div>
 
-        <div style={{ marginBottom: '1rem' }}>
-          <label htmlFor="password" style={{ display: 'block', marginBottom: '0.5rem' }}>
+        <div className="form-group">
+          <label htmlFor="password" className="form-label">
             Password
           </label>
           <input
             id="password"
             type="password"
+            placeholder="••••••••"
             {...register('password')}
-            style={{ width: '100%', padding: '0.5rem', boxSizing: 'border-box' }}
+            className="form-input"
             disabled={isSubmitting}
           />
           {errors.password && (
-            <span style={{ color: 'red', fontSize: '0.875rem' }}>{errors.password.message}</span>
+            <span className="form-error">{errors.password.message}</span>
           )}
         </div>
 
         <button
           type="submit"
           disabled={isSubmitting}
-          style={{
-            width: '100%',
-            padding: '0.75rem',
-            backgroundColor: isSubmitting ? '#999' : '#0066cc',
-            color: '#fff',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: isSubmitting ? 'not-allowed' : 'pointer',
-          }}
+          className="btn btn-primary btn-lg"
+          style={{ width: '100%', marginTop: 'var(--space-2)' }}
         >
-          {isSubmitting ? 'Logging in...' : 'Login'}
+          {isSubmitting ? 'Authenticating...' : 'Sign In'}
         </button>
       </form>
+
+      {/* Quick Demo Shortcuts */}
+      <div style={{ marginTop: 'var(--space-6)', borderTop: '1px solid var(--color-border)', paddingTop: 'var(--space-4)' }}>
+        <span style={{ display: 'block', fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)', textAlign: 'center', marginBottom: 'var(--space-2)' }}>
+          Quick Demo Credentials:
+        </span>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-2)' }}>
+          <button
+            type="button"
+            onClick={() => fillCredentials('admin@dayflow.local', 'Admin@123')}
+            className="btn btn-secondary btn-sm"
+          >
+            👑 Admin / HR
+          </button>
+          <button
+            type="button"
+            onClick={() => fillCredentials('employee@dayflow.local', 'Employee@123')}
+            className="btn btn-secondary btn-sm"
+          >
+            👤 Employee
+          </button>
+        </div>
+      </div>
     </div>
   );
 };
+
+export default LoginForm;

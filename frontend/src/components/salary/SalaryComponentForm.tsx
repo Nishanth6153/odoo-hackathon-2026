@@ -55,54 +55,56 @@ export const SalaryComponentForm: React.FC<SalaryComponentFormProps> = ({
       ? (monthlyWage * value) / 100
       : value;
 
+  const isEarning = category === 'EARNING';
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+    <form onSubmit={handleSubmit(onSubmit)} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
       {apiError && (
-        <div style={{ padding: '0.75rem', backgroundColor: '#ffe6e6', color: '#cc0000', borderRadius: '4px', fontSize: '0.875rem' }}>
-          {apiError}
+        <div className="alert alert-error">
+          <span>⚠️ {apiError}</span>
         </div>
       )}
 
-      <div>
-        <label htmlFor="name" style={{ display: 'block', marginBottom: '0.35rem', fontWeight: 500 }}>
+      <div className="form-group">
+        <label htmlFor="name" className="form-label">
           Component Name *
         </label>
         <input
           id="name"
           type="text"
-          placeholder="e.g. Basic Salary, HRA, Professional Tax"
+          placeholder="e.g. Basic Salary, HRA, Provident Fund"
           {...register('name')}
           disabled={isSubmitting}
-          style={{ width: '100%', padding: '0.55rem', borderRadius: '4px', border: '1px solid #ccc', boxSizing: 'border-box' }}
+          className="form-input"
         />
-        {errors.name && <span style={{ color: 'red', fontSize: '0.8rem' }}>{errors.name.message}</span>}
+        {errors.name && <span className="form-error">{errors.name.message}</span>}
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-        <div>
-          <label htmlFor="category" style={{ display: 'block', marginBottom: '0.35rem', fontWeight: 500 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-4)' }}>
+        <div className="form-group">
+          <label htmlFor="category" className="form-label">
             Category *
           </label>
           <select
             id="category"
             {...register('category')}
             disabled={isSubmitting}
-            style={{ width: '100%', padding: '0.55rem', borderRadius: '4px', border: '1px solid #ccc', boxSizing: 'border-box' }}
+            className="form-select"
           >
             <option value="EARNING">Earning (+)</option>
             <option value="DEDUCTION">Deduction (-)</option>
           </select>
         </div>
 
-        <div>
-          <label htmlFor="calculationType" style={{ display: 'block', marginBottom: '0.35rem', fontWeight: 500 }}>
+        <div className="form-group">
+          <label htmlFor="calculationType" className="form-label">
             Calculation Type *
           </label>
           <select
             id="calculationType"
             {...register('calculationType')}
             disabled={isSubmitting}
-            style={{ width: '100%', padding: '0.55rem', borderRadius: '4px', border: '1px solid #ccc', boxSizing: 'border-box' }}
+            className="form-select"
           >
             <option value="PERCENTAGE">Percentage (%)</option>
             <option value="FIXED">Fixed Amount (₹)</option>
@@ -110,8 +112,8 @@ export const SalaryComponentForm: React.FC<SalaryComponentFormProps> = ({
         </div>
       </div>
 
-      <div>
-        <label htmlFor="value" style={{ display: 'block', marginBottom: '0.35rem', fontWeight: 500 }}>
+      <div className="form-group">
+        <label htmlFor="value" className="form-label">
           {calculationType === 'PERCENTAGE' ? 'Percentage Value (%)' : 'Fixed Amount (₹)'} *
         </label>
         <input
@@ -120,39 +122,34 @@ export const SalaryComponentForm: React.FC<SalaryComponentFormProps> = ({
           step="any"
           {...register('value', { valueAsNumber: true })}
           disabled={isSubmitting}
-          style={{ width: '100%', padding: '0.55rem', borderRadius: '4px', border: '1px solid #ccc', boxSizing: 'border-box' }}
+          className="form-input"
         />
-        {errors.value && <span style={{ color: 'red', fontSize: '0.8rem' }}>{errors.value.message}</span>}
+        {errors.value && <span className="form-error">{errors.value.message}</span>}
       </div>
 
       {/* Live Dynamic Preview Banner */}
       <div
-        style={{
-          padding: '0.85rem',
-          borderRadius: '6px',
-          backgroundColor: category === 'EARNING' ? '#e6f4ea' : '#fce8e6',
-          border: `1px solid ${category === 'EARNING' ? '#34a853' : '#ea4335'}`,
-          fontSize: '0.9rem',
-        }}
+        className={isEarning ? 'alert alert-success' : 'alert alert-error'}
+        style={{ margin: 0, display: 'block' }}
       >
-        <div style={{ color: '#555', fontSize: '0.8rem', fontWeight: 500 }}>Dynamic Preview Calculation</div>
-        <div style={{ fontWeight: 'bold', fontSize: '1.1rem', color: category === 'EARNING' ? '#137333' : '#c5221f', marginTop: '0.2rem' }}>
-          {category === 'EARNING' ? '+' : '-'} ₹{calculatedPreview.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+        <div style={{ fontSize: 'var(--text-xs)', fontWeight: 500, opacity: 0.85 }}>Dynamic Calculation Preview</div>
+        <div style={{ fontWeight: 700, fontSize: 'var(--text-lg)', marginTop: '2px', fontFamily: 'var(--font-mono)' }}>
+          {isEarning ? '+' : '-'} ₹{calculatedPreview.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           {calculationType === 'PERCENTAGE' && (
-            <span style={{ fontSize: '0.8rem', fontWeight: 'normal', color: '#555', marginLeft: '0.5rem' }}>
+            <span style={{ fontSize: 'var(--text-xs)', fontWeight: 'normal', opacity: 0.85, marginLeft: 'var(--space-2)' }}>
               ({value}% of ₹{monthlyWage.toLocaleString()})
             </span>
           )}
         </div>
       </div>
 
-      <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '0.5rem' }}>
+      <div style={{ display: 'flex', gap: 'var(--space-3)', justifyContent: 'flex-end', marginTop: 'var(--space-2)' }}>
         {onCancel && (
           <button
             type="button"
             onClick={onCancel}
             disabled={isSubmitting}
-            style={{ padding: '0.55rem 1rem', borderRadius: '4px', border: '1px solid #ccc', backgroundColor: '#fff', cursor: 'pointer' }}
+            className="btn btn-secondary"
           >
             Cancel
           </button>
@@ -161,15 +158,7 @@ export const SalaryComponentForm: React.FC<SalaryComponentFormProps> = ({
         <button
           type="submit"
           disabled={isSubmitting}
-          style={{
-            padding: '0.55rem 1.25rem',
-            borderRadius: '4px',
-            border: 'none',
-            backgroundColor: isSubmitting ? '#888' : '#0066cc',
-            color: '#fff',
-            cursor: isSubmitting ? 'not-allowed' : 'pointer',
-            fontWeight: 500,
-          }}
+          className="btn btn-primary"
         >
           {isSubmitting ? 'Saving...' : submitButtonText}
         </button>
@@ -177,3 +166,5 @@ export const SalaryComponentForm: React.FC<SalaryComponentFormProps> = ({
     </form>
   );
 };
+
+export default SalaryComponentForm;

@@ -79,134 +79,124 @@ export const TimeOffRequestDetails: React.FC<TimeOffRequestDetailsProps> = ({
   };
 
   return (
-    <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '1rem' }}>
-      <div style={{ backgroundColor: '#fff', borderRadius: '8px', maxWidth: '550px', width: '100%', padding: '1.75rem', boxShadow: '0 4px 12px rgba(0,0,0,0.15)', maxHeight: '90vh', overflowY: 'auto' }}>
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-dialog" onClick={(e) => e.stopPropagation()}>
         {/* Modal Header */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #eee', paddingBottom: '1rem', marginBottom: '1.25rem' }}>
-          <h2 style={{ margin: 0, fontSize: '1.3rem' }}>Time-Off Request Details</h2>
+        <div className="modal-dialog-header">
+          <h2 style={{ margin: 0, fontSize: 'var(--text-lg)', color: 'var(--color-text-primary)' }}>
+            Time-Off Request Details
+          </h2>
           <button
             onClick={onClose}
             disabled={isProcessing}
-            style={{ background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer', color: '#666' }}
+            style={{ background: 'none', border: 'none', fontSize: 'var(--text-xl)', cursor: 'pointer', color: 'var(--color-text-muted)', lineHeight: 1 }}
           >
             ×
           </button>
         </div>
 
-        {error && (
-          <div style={{ padding: '0.75rem', backgroundColor: '#ffe6e6', color: '#cc0000', borderRadius: '4px', marginBottom: '1rem', fontSize: '0.875rem' }}>
-            {error}
-          </div>
-        )}
-
-        {/* Content Details */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', fontSize: '0.95rem' }}>
-          {isAdminView && (
-            <div style={{ backgroundColor: '#f8f9fa', padding: '0.75rem', borderRadius: '6px', border: '1px solid #e9ecef' }}>
-              <strong>Employee:</strong> {request.employeeName || 'Unknown Employee'}
-              {request.employeeEmail && <div style={{ fontSize: '0.85rem', color: '#666' }}>Email: {request.employeeEmail}</div>}
-              {request.department && <div style={{ fontSize: '0.85rem', color: '#666' }}>Dept: {request.department}</div>}
+        <div className="modal-dialog-body">
+          {error && (
+            <div className="alert alert-error">
+              <span>⚠️ {error}</span>
             </div>
           )}
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-            <div>
-              <strong>Leave Type:</strong>
-              <div>{formatLeaveType(request.type)}</div>
-            </div>
+          {/* Content Details */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)', fontSize: 'var(--text-sm)' }}>
+            {isAdminView && (
+              <div style={{ backgroundColor: 'var(--color-bg-subtle)', padding: 'var(--space-3) var(--space-4)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--color-border)' }}>
+                <div style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>{request.employeeName || 'Unknown Employee'}</div>
+                {request.employeeEmail && <div style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)' }}>{request.employeeEmail}</div>}
+                {request.department && <div style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)' }}>Dept: {request.department}</div>}
+              </div>
+            )}
 
-            <div>
-              <strong>Current Status:</strong>
-              <div style={{ marginTop: '0.25rem' }}>
-                <TimeOffStatusBadge status={request.status} />
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-4)' }}>
+              <div>
+                <span className="stat-label">Leave Type</span>
+                <div style={{ fontWeight: 500, color: 'var(--color-text-primary)', marginTop: '2px' }}>{formatLeaveType(request.type)}</div>
+              </div>
+
+              <div>
+                <span className="stat-label">Current Status</span>
+                <div style={{ marginTop: '4px' }}>
+                  <TimeOffStatusBadge status={request.status} />
+                </div>
               </div>
             </div>
-          </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-            <div>
-              <strong>Start Date:</strong>
-              <div>{formatDate(request.startDate)}</div>
-            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-4)' }}>
+              <div>
+                <span className="stat-label">Start Date</span>
+                <div style={{ color: 'var(--color-text-primary)', marginTop: '2px' }}>{formatDate(request.startDate)}</div>
+              </div>
 
-            <div>
-              <strong>End Date:</strong>
-              <div>{formatDate(request.endDate)}</div>
-            </div>
-          </div>
-
-          <div>
-            <strong>Reason for Leave:</strong>
-            <p style={{ margin: '0.35rem 0 0', padding: '0.75rem', backgroundColor: '#f5f5f5', borderRadius: '4px', color: '#444', whiteSpace: 'pre-wrap' }}>
-              {request.reason}
-            </p>
-          </div>
-
-          {request.attachmentUrl && (
-            <div>
-              <strong>Attachment:</strong>
-              <div style={{ marginTop: '0.25rem' }}>
-                <a href={request.attachmentUrl} target="_blank" rel="noreferrer" style={{ color: '#0066cc' }}>
-                  📎 View Attachment Document
-                </a>
+              <div>
+                <span className="stat-label">End Date</span>
+                <div style={{ color: 'var(--color-text-primary)', marginTop: '2px' }}>{formatDate(request.endDate)}</div>
               </div>
             </div>
-          )}
 
-          {request.createdAt && (
-            <div style={{ fontSize: '0.8rem', color: '#888', marginTop: '0.5rem', borderTop: '1px solid #eee', paddingTop: '0.75rem' }}>
-              Submitted on: {formatDate(request.createdAt)}
+            <div>
+              <span className="stat-label">Reason for Leave</span>
+              <p style={{ margin: 'var(--space-1) 0 0', padding: 'var(--space-3)', backgroundColor: 'var(--color-bg-subtle)', borderRadius: 'var(--radius-sm)', color: 'var(--color-text-primary)', border: '1px solid var(--color-border)', whiteSpace: 'pre-wrap' }}>
+                {request.reason}
+              </p>
             </div>
-          )}
-        </div>
 
-        {/* Modal Actions */}
-        <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '1.5rem', borderTop: '1px solid #eee', paddingTop: '1rem' }}>
-          <button
-            onClick={onClose}
-            disabled={isProcessing}
-            style={{ padding: '0.5rem 1rem', borderRadius: '4px', border: '1px solid #ccc', backgroundColor: '#fff', cursor: 'pointer' }}
-          >
-            Close
-          </button>
+            {request.attachmentUrl && (
+              <div>
+                <span className="stat-label">Attachment</span>
+                <div style={{ marginTop: 'var(--space-1)' }}>
+                  <a href={request.attachmentUrl} target="_blank" rel="noreferrer" style={{ color: 'var(--color-primary)' }}>
+                    📎 View Attachment Document
+                  </a>
+                </div>
+              </div>
+            )}
 
-          {isAdminView && request.status === 'PENDING' && (
-            <>
-              <button
-                onClick={handleReject}
-                disabled={isProcessing}
-                style={{
-                  padding: '0.5rem 1rem',
-                  borderRadius: '4px',
-                  border: 'none',
-                  backgroundColor: isProcessing ? '#888' : '#dc3545',
-                  color: '#fff',
-                  cursor: isProcessing ? 'not-allowed' : 'pointer',
-                  fontWeight: 500,
-                }}
-              >
-                {isProcessing ? 'Processing...' : 'Reject Request'}
-              </button>
+            {request.createdAt && (
+              <div style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)', borderTop: '1px solid var(--color-border)', paddingTop: 'var(--space-3)' }}>
+                Submitted on: {formatDate(request.createdAt)}
+              </div>
+            )}
+          </div>
 
-              <button
-                onClick={handleApprove}
-                disabled={isProcessing}
-                style={{
-                  padding: '0.5rem 1rem',
-                  borderRadius: '4px',
-                  border: 'none',
-                  backgroundColor: isProcessing ? '#888' : '#137333',
-                  color: '#fff',
-                  cursor: isProcessing ? 'not-allowed' : 'pointer',
-                  fontWeight: 500,
-                }}
-              >
-                {isProcessing ? 'Processing...' : 'Approve Request'}
-              </button>
-            </>
-          )}
+          {/* Modal Actions */}
+          <div style={{ display: 'flex', gap: 'var(--space-3)', justifyContent: 'flex-end', marginTop: 'var(--space-6)', borderTop: '1px solid var(--color-border)', paddingTop: 'var(--space-4)' }}>
+            <button
+              onClick={onClose}
+              disabled={isProcessing}
+              className="btn btn-secondary"
+            >
+              Close
+            </button>
+
+            {isAdminView && request.status === 'PENDING' && (
+              <>
+                <button
+                  onClick={handleReject}
+                  disabled={isProcessing}
+                  className="btn btn-danger"
+                >
+                  {isProcessing ? 'Processing...' : 'Reject'}
+                </button>
+
+                <button
+                  onClick={handleApprove}
+                  disabled={isProcessing}
+                  className="btn btn-success"
+                >
+                  {isProcessing ? 'Processing...' : 'Approve'}
+                </button>
+              </>
+            )}
+          </div>
         </div>
       </div>
     </div>
   );
 };
+
+export default TimeOffRequestDetails;

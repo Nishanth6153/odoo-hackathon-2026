@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { Navbar } from '../components/layout/Navbar';
 import { salaryService } from '../services/salary.service';
 import { employeeService } from '../services/employee.service';
 import { SalaryComponentList } from '../components/salary/SalaryComponentList';
@@ -167,197 +168,211 @@ export const SalaryPage: React.FC = () => {
 
   const yearlyWagePreview = currentWage * 12;
 
-  if (loading) {
-    return <div style={{ padding: '3rem', textAlign: 'center', color: '#666' }}>Loading salary configuration...</div>;
-  }
-
-  if (error && !salary) {
-    return (
-      <div style={{ maxWidth: '600px', margin: '2rem auto', padding: '2rem', textAlign: 'center', backgroundColor: '#ffe6e6', borderRadius: '8px' }}>
-        <h2 style={{ color: '#cc0000', marginTop: 0 }}>Unable to Load Salary Information</h2>
-        <p>{error}</p>
-        <button
-          onClick={fetchSalaryData}
-          style={{ padding: '0.5rem 1rem', backgroundColor: '#0066cc', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
-        >
-          Retry
-        </button>
-      </div>
-    );
-  }
-
   return (
-    <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '2rem', fontFamily: 'system-ui, sans-serif' }}>
-      {/* Navigation & Header */}
-      <button
-        onClick={() => navigate(`/admin/employees/${id}`)}
-        style={{ marginBottom: '1rem', background: 'none', border: 'none', color: '#0066cc', cursor: 'pointer', textDecoration: 'underline' }}
-      >
-        ← Back to Employee Details
-      </button>
+    <>
+      <Navbar portalTitle="Administration" />
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
-        <div>
-          <h1 style={{ margin: 0 }}>Salary & Compensation</h1>
-          {employee && (
-            <p style={{ margin: '0.25rem 0 0', color: '#666' }}>
-              Employee: <strong>{employee.name}</strong> ({employee.designation || 'No Designation'})
-            </p>
-          )}
-        </div>
-
-        <button
-          onClick={() => {
-            setComponentApiError(null);
-            setShowAddComponent(true);
-          }}
-          style={{
-            padding: '0.65rem 1.25rem',
-            backgroundColor: '#0066cc',
-            color: '#fff',
-            border: 'none',
-            borderRadius: '6px',
-            cursor: 'pointer',
-            fontWeight: 600,
-          }}
-        >
-          + Add Salary Component
-        </button>
-      </div>
-
-      {/* Configuration Section: Base Wage & Working Days */}
-      <div style={{ border: '1px solid #e0e0e0', borderRadius: '10px', padding: '1.5rem', backgroundColor: '#fff', marginBottom: '2rem' }}>
-        <h2 style={{ marginTop: 0, fontSize: '1.2rem', marginBottom: '1rem' }}>Base Salary Configuration</h2>
-
-        {wageSaveSuccess && (
-          <div style={{ padding: '0.75rem', backgroundColor: '#e6f4ea', color: '#137333', borderRadius: '4px', marginBottom: '1rem' }}>
-            Base salary updated successfully!
-          </div>
-        )}
-
-        {wageApiError && (
-          <div style={{ padding: '0.75rem', backgroundColor: '#ffe6e6', color: '#cc0000', borderRadius: '4px', marginBottom: '1rem' }}>
-            {wageApiError}
-          </div>
-        )}
-
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.25rem', alignItems: 'end' }}>
-          <div>
-            <label style={{ display: 'block', marginBottom: '0.35rem', fontWeight: 500 }}>Monthly Wage (₹) *</label>
-            <input
-              type="number"
-              value={monthlyWageInput}
-              onChange={(e) => setMonthlyWageInput(Number(e.target.value))}
-              disabled={savingWage}
-              style={{ width: '100%', padding: '0.55rem', borderRadius: '4px', border: '1px solid #ccc', boxSizing: 'border-box' }}
-            />
-          </div>
-
-          <div>
-            <label style={{ display: 'block', marginBottom: '0.35rem', fontWeight: 500 }}>Working Days per Month</label>
-            <input
-              type="number"
-              value={workingDaysInput}
-              onChange={(e) => setWorkingDaysInput(Number(e.target.value))}
-              disabled={savingWage}
-              style={{ width: '100%', padding: '0.55rem', borderRadius: '4px', border: '1px solid #ccc', boxSizing: 'border-box' }}
-            />
-          </div>
-
-          <div>
-            <label style={{ display: 'block', marginBottom: '0.35rem', fontWeight: 500 }}>Calculated Yearly Wage</label>
-            <div style={{ padding: '0.55rem', backgroundColor: '#f8f9fa', borderRadius: '4px', border: '1px solid #e0e0e0', fontWeight: 'bold', color: '#222' }}>
-              ₹{yearlyWagePreview.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-            </div>
+      <main className="page-container">
+        {/* Navigation & Header */}
+        <div className="page-header">
+          <div className="page-title-group">
+            <button
+              onClick={() => navigate(`/admin/employees/${id}`)}
+              className="back-link"
+            >
+              ← Back to Employee Profile
+            </button>
+            <h1>Salary & Compensation</h1>
+            {employee && (
+              <p>
+                Configure salary components for <strong>{employee.name}</strong> ({employee.designation || 'Staff'})
+              </p>
+            )}
           </div>
 
           <button
-            onClick={handleSaveWage}
-            disabled={savingWage}
-            style={{
-              padding: '0.6rem 1.25rem',
-              backgroundColor: savingWage ? '#888' : '#137333',
-              color: '#fff',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: savingWage ? 'not-allowed' : 'pointer',
-              fontWeight: 500,
+            onClick={() => {
+              setComponentApiError(null);
+              setShowAddComponent(true);
             }}
+            className="btn btn-primary"
           >
-            {savingWage ? 'Saving...' : 'Save Base Wage'}
+            + Add Salary Component
           </button>
         </div>
-      </div>
 
-      {/* Dynamic Summary Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.25rem', marginBottom: '2rem' }}>
-        <div style={{ backgroundColor: '#e6f4ea', border: '1px solid #ceebd6', padding: '1.25rem', borderRadius: '8px' }}>
-          <span style={{ fontSize: '0.85rem', color: '#137333', fontWeight: 500 }}>Total Earnings</span>
-          <strong style={{ display: 'block', fontSize: '1.6rem', color: '#137333', marginTop: '0.25rem' }}>
-            ₹{calculatedEarnings.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-          </strong>
-        </div>
-
-        <div style={{ backgroundColor: '#fce8e6', border: '1px solid #fad2cf', padding: '1.25rem', borderRadius: '8px' }}>
-          <span style={{ fontSize: '0.85rem', color: '#c5221f', fontWeight: 500 }}>Total Deductions</span>
-          <strong style={{ display: 'block', fontSize: '1.6rem', color: '#c5221f', marginTop: '0.25rem' }}>
-            ₹{calculatedDeductions.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-          </strong>
-        </div>
-
-        <div style={{ backgroundColor: '#e8f0fe', border: '1px solid #d2e3fc', padding: '1.25rem', borderRadius: '8px' }}>
-          <span style={{ fontSize: '0.85rem', color: '#1a73e8', fontWeight: 500 }}>Net Monthly Salary (Preview)</span>
-          <strong style={{ display: 'block', fontSize: '1.6rem', color: '#1a73e8', marginTop: '0.25rem' }}>
-            ₹{netMonthly.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-          </strong>
-        </div>
-      </div>
-
-      {/* Modals for Add & Edit Component */}
-      {showAddComponent && (
-        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '1rem' }}>
-          <div style={{ backgroundColor: '#fff', borderRadius: '8px', maxWidth: '500px', width: '100%', padding: '1.75rem' }}>
-            <h2 style={{ marginTop: 0 }}>Add Salary Component</h2>
-            <SalaryComponentForm
-              monthlyWage={currentWage}
-              onSubmit={handleAddComponentSubmit}
-              onCancel={() => setShowAddComponent(false)}
-              apiError={componentApiError}
-              submitButtonText="Add Component"
-            />
+        {/* Loading / Error state */}
+        {loading ? (
+          <div className="loading-box">
+            <div className="spinner" />
+            <span>Loading salary details...</span>
           </div>
-        </div>
-      )}
-
-      {editingComponent && (
-        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '1rem' }}>
-          <div style={{ backgroundColor: '#fff', borderRadius: '8px', maxWidth: '500px', width: '100%', padding: '1.75rem' }}>
-            <h2 style={{ marginTop: 0 }}>Edit Salary Component</h2>
-            <SalaryComponentForm
-              initialValues={editingComponent}
-              monthlyWage={currentWage}
-              onSubmit={handleEditComponentSubmit}
-              onCancel={() => setEditingComponent(null)}
-              apiError={componentApiError}
-              submitButtonText="Update Component"
-            />
+        ) : error && !salary ? (
+          <div className="empty-state">
+            <div className="empty-state-icon">❌</div>
+            <div className="empty-state-title">Salary Information Unavailable</div>
+            <p className="empty-state-desc">{error}</p>
+            <button onClick={fetchSalaryData} className="btn btn-primary btn-sm" style={{ marginTop: 'var(--space-4)' }}>
+              Retry
+            </button>
           </div>
-        </div>
-      )}
+        ) : (
+          <>
+            {/* Configuration Section: Base Wage & Working Days */}
+            <div className="card card-padding" style={{ marginBottom: 'var(--space-6)' }}>
+              <h2 style={{ fontSize: 'var(--text-base)', marginBottom: 'var(--space-4)', color: 'var(--color-text-primary)' }}>
+                Base Salary Configuration
+              </h2>
 
-      {/* Salary Component List Section */}
-      <h2 style={{ fontSize: '1.25rem', marginBottom: '1rem' }}>Configured Salary Components</h2>
-      <SalaryComponentList
-        components={currentComponents}
-        monthlyWage={currentWage}
-        onEditComponent={(comp) => {
-          setComponentApiError(null);
-          setEditingComponent(comp);
-        }}
-        onDeleteComponent={handleDeleteComponent}
-        isProcessing={isProcessingComponent}
-      />
-    </div>
+              {wageSaveSuccess && (
+                <div className="alert alert-success" style={{ marginBottom: 'var(--space-4)' }}>
+                  <span>✓ Base salary configuration updated successfully.</span>
+                </div>
+              )}
+
+              {wageApiError && (
+                <div className="alert alert-error" style={{ marginBottom: 'var(--space-4)' }}>
+                  <span>⚠️ {wageApiError}</span>
+                </div>
+              )}
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 'var(--space-4)', alignItems: 'end' }}>
+                <div className="form-group" style={{ margin: 0 }}>
+                  <label className="form-label">Monthly Wage (₹) *</label>
+                  <input
+                    type="number"
+                    value={monthlyWageInput}
+                    onChange={(e) => setMonthlyWageInput(Number(e.target.value))}
+                    disabled={savingWage}
+                    className="form-input"
+                  />
+                </div>
+
+                <div className="form-group" style={{ margin: 0 }}>
+                  <label className="form-label">Working Days / Month</label>
+                  <input
+                    type="number"
+                    value={workingDaysInput}
+                    onChange={(e) => setWorkingDaysInput(Number(e.target.value))}
+                    disabled={savingWage}
+                    className="form-input"
+                  />
+                </div>
+
+                <div className="form-group" style={{ margin: 0 }}>
+                  <label className="form-label">Calculated Yearly CTC</label>
+                  <div style={{ padding: '0.55rem 0.85rem', backgroundColor: 'var(--color-bg-subtle)', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)', fontWeight: 700, color: 'var(--color-text-primary)', fontFamily: 'var(--font-mono)' }}>
+                    ₹{yearlyWagePreview.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </div>
+                </div>
+
+                <button
+                  onClick={handleSaveWage}
+                  disabled={savingWage}
+                  className="btn btn-success"
+                >
+                  {savingWage ? 'Saving...' : 'Save Base Wage'}
+                </button>
+              </div>
+            </div>
+
+            {/* Dynamic Summary Cards */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 'var(--space-4)', marginBottom: 'var(--space-6)' }}>
+              <div className="stat-card">
+                <span className="stat-label">Total Earnings</span>
+                <div className="stat-value" style={{ color: 'var(--color-success)' }}>
+                  ₹{calculatedEarnings.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </div>
+                <span className="stat-subtext">Allowances & gross additions</span>
+              </div>
+
+              <div className="stat-card">
+                <span className="stat-label">Total Deductions</span>
+                <div className="stat-value" style={{ color: 'var(--color-error)' }}>
+                  ₹{calculatedDeductions.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </div>
+                <span className="stat-subtext">Tax, PF, and deductions</span>
+              </div>
+
+              <div className="stat-card">
+                <span className="stat-label">Net Monthly Salary</span>
+                <div className="stat-value" style={{ color: 'var(--color-primary)' }}>
+                  ₹{netMonthly.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </div>
+                <span className="stat-subtext">Take-home monthly estimate</span>
+              </div>
+            </div>
+
+            {/* Modals for Add & Edit Component */}
+            {showAddComponent && (
+              <div className="modal-overlay" onClick={() => setShowAddComponent(false)}>
+                <div className="modal-dialog" onClick={(e) => e.stopPropagation()}>
+                  <div className="modal-dialog-header">
+                    <h2 style={{ margin: 0, fontSize: 'var(--text-lg)' }}>Add Salary Component</h2>
+                    <button
+                      onClick={() => setShowAddComponent(false)}
+                      style={{ background: 'none', border: 'none', fontSize: 'var(--text-xl)', cursor: 'pointer', color: 'var(--color-text-muted)', lineHeight: 1 }}
+                    >
+                      ×
+                    </button>
+                  </div>
+                  <div className="modal-dialog-body">
+                    <SalaryComponentForm
+                      monthlyWage={currentWage}
+                      onSubmit={handleAddComponentSubmit}
+                      onCancel={() => setShowAddComponent(false)}
+                      apiError={componentApiError}
+                      submitButtonText="Add Component"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {editingComponent && (
+              <div className="modal-overlay" onClick={() => setEditingComponent(null)}>
+                <div className="modal-dialog" onClick={(e) => e.stopPropagation()}>
+                  <div className="modal-dialog-header">
+                    <h2 style={{ margin: 0, fontSize: 'var(--text-lg)' }}>Edit Salary Component</h2>
+                    <button
+                      onClick={() => setEditingComponent(null)}
+                      style={{ background: 'none', border: 'none', fontSize: 'var(--text-xl)', cursor: 'pointer', color: 'var(--color-text-muted)', lineHeight: 1 }}
+                    >
+                      ×
+                    </button>
+                  </div>
+                  <div className="modal-dialog-body">
+                    <SalaryComponentForm
+                      initialValues={editingComponent}
+                      monthlyWage={currentWage}
+                      onSubmit={handleEditComponentSubmit}
+                      onCancel={() => setEditingComponent(null)}
+                      apiError={componentApiError}
+                      submitButtonText="Update Component"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Salary Component List Section */}
+            <h2 style={{ fontSize: 'var(--text-base)', marginBottom: 'var(--space-4)', color: 'var(--color-text-primary)' }}>
+              Configured Components
+            </h2>
+            <SalaryComponentList
+              components={currentComponents}
+              monthlyWage={currentWage}
+              onEditComponent={(comp) => {
+                setComponentApiError(null);
+                setEditingComponent(comp);
+              }}
+              onDeleteComponent={handleDeleteComponent}
+              isProcessing={isProcessingComponent}
+            />
+          </>
+        )}
+      </main>
+    </>
   );
 };
 

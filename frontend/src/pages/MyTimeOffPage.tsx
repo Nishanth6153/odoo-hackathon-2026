@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Navbar } from '../components/layout/Navbar';
 import { timeOffService } from '../services/timeoff.service';
 import { LeaveBalanceCard } from '../components/timeoff/LeaveBalanceCard';
 import { TimeOffForm, type TimeOffFormData } from '../components/timeoff/TimeOffForm';
@@ -14,6 +15,7 @@ export const MyTimeOffPage: React.FC = () => {
   const [balances, setBalances] = useState<LeaveBalances | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [submissionSuccess, setSubmissionSuccess] = useState<string | null>(null);
 
   // Form & details state
   const [showApplyModal, setShowApplyModal] = useState(false);
@@ -50,6 +52,7 @@ export const MyTimeOffPage: React.FC = () => {
   const handleApplySubmit = async (formData: TimeOffFormData) => {
     try {
       setFormApiError(null);
+      setSubmissionSuccess(null);
       await timeOffService.createTimeOffRequest({
         type: formData.type,
         startDate: formData.startDate,
@@ -58,7 +61,8 @@ export const MyTimeOffPage: React.FC = () => {
       });
 
       setShowApplyModal(false);
-      fetchMyTimeOffData(); // Refresh list & balances
+      setSubmissionSuccess('🎉 Your time-off application has been submitted successfully and is queued for administrator review.');
+      await fetchMyTimeOffData(); // Immediate refresh of balances & history
     } catch (err: unknown) {
       if (err instanceof Error) {
         setFormApiError(err.message);
@@ -69,86 +73,122 @@ export const MyTimeOffPage: React.FC = () => {
   };
 
   return (
-    <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '2rem', fontFamily: 'system-ui, sans-serif' }}>
-      {/* Navigation & Header */}
-      <button
-        onClick={() => navigate('/employee')}
-        style={{ marginBottom: '1rem', background: 'none', border: 'none', color: '#0066cc', cursor: 'pointer', textDecoration: 'underline' }}
-      >
-        ← Back to Employee Dashboard
-      </button>
+    <>
+      <Navbar portalTitle="Employee Workspace" />
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
-        <h1 style={{ margin: 0 }}>My Time Off & Requests</h1>
-
-        <button
-          onClick={() => {
-            setFormApiError(null);
-            setShowApplyModal(true);
-          }}
-          style={{
-            padding: '0.65rem 1.25rem',
-            backgroundColor: '#0066cc',
-            color: '#fff',
-            border: 'none',
-            borderRadius: '6px',
-            cursor: 'pointer',
-            fontWeight: 600,
-          }}
-        >
-          + Apply for Time Off
-        </button>
-      </div>
-
-      {/* Leave Balances Section */}
-      <LeaveBalanceCard balances={balances} loading={loading} />
-
-      {/* Apply Form Modal */}
-      {showApplyModal && (
-        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '1rem' }}>
-          <div style={{ backgroundColor: '#fff', borderRadius: '8px', maxWidth: '550px', width: '100%', padding: '1.75rem', maxHeight: '90vh', overflowY: 'auto' }}>
-            <h2 style={{ marginTop: 0 }}>Apply for Time Off</h2>
-            <TimeOffForm
-              onSubmit={handleApplySubmit}
-              onCancel={() => setShowApplyModal(false)}
-              apiError={formApiError}
-            />
-          </div>
-        </div>
-      )}
-
-      {/* Detail Modal */}
-      {selectedRequest && (
-        <TimeOffRequestDetails
-          request={selectedRequest}
-          onClose={() => setSelectedRequest(null)}
-        />
-      )}
-
-      {/* Request History Section */}
-      <div style={{ border: '1px solid #e0e0e0', borderRadius: '12px', padding: '1.75rem', backgroundColor: '#ffffff' }}>
-        <h2 style={{ marginTop: 0, marginBottom: '1.25rem', fontSize: '1.25rem' }}>Request History</h2>
-
-        {loading ? (
-          <div style={{ padding: '2.5rem', textAlign: 'center', color: '#666' }}>Loading requests...</div>
-        ) : error ? (
-          <div style={{ padding: '2rem', textAlign: 'center', backgroundColor: '#ffe6e6', borderRadius: '8px', color: '#cc0000' }}>
-            <p style={{ margin: '0 0 1rem' }}>{error}</p>
+      <main className="page-container">
+        {/* Navigation & Header */}
+        <div className="page-header">
+          <div className="page-title-group">
             <button
-              onClick={fetchMyTimeOffData}
-              style={{ padding: '0.5rem 1rem', backgroundColor: '#0066cc', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+              onClick={() => navigate('/employee')}
+              className="back-link"
             >
+              ← Back to Dashboard
+            </button>
+            <h1>My Time Off & Requests</h1>
+            <p>Track your leave balance entitlements and apply for paid or sick time off</p>
+          </div>
+
+          <button
+            onClick={() => {
+              setFormApiError(null);
+              setShowApplyModal(true);
+            }}
+            className="btn btn-primary"
+          >
+            + Apply for Time Off
+          </button>
+        </div>
+
+        {/* Submission Success Alert */}
+        {submissionSuccess && (
+          <div className="alert alert-success" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-5)' }}>
+            <span>{submissionSuccess}</span>
+            <button onClick={() => setSubmissionSuccess(null)} className="btn btn-sm btn-secondary">
+              Dismiss
+            </button>
+          </div>
+        )}
+
+        {/* Error Alert */}
+        {error && (
+          <div className="alert alert-error" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-5)' }}>
+            <span>⚠️ {error}</span>
+            <button onClick={fetchMyTimeOffData} className="btn btn-sm btn-danger">
               Retry
             </button>
           </div>
-        ) : (
-          <TimeOffRequestList
-            requests={requests}
-            onSelectRequest={(req) => setSelectedRequest(req)}
+        )}
+
+        {/* Leave Balances Section */}
+        <div style={{ marginBottom: 'var(--space-6)' }}>
+          <LeaveBalanceCard balances={balances} loading={loading} />
+        </div>
+
+        {/* Apply Form Modal */}
+        {showApplyModal && (
+          <div className="modal-overlay" onClick={() => setShowApplyModal(false)}>
+            <div className="modal-dialog" onClick={(e) => e.stopPropagation()}>
+              <div className="modal-dialog-header">
+                <h2 style={{ margin: 0, fontSize: 'var(--text-lg)' }}>Apply for Time Off</h2>
+                <button
+                  onClick={() => setShowApplyModal(false)}
+                  style={{ background: 'none', border: 'none', fontSize: 'var(--text-xl)', cursor: 'pointer', color: 'var(--color-text-muted)', lineHeight: 1 }}
+                >
+                  ×
+                </button>
+              </div>
+
+              <div className="modal-dialog-body">
+                <TimeOffForm
+                  onSubmit={handleApplySubmit}
+                  onCancel={() => setShowApplyModal(false)}
+                  apiError={formApiError}
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Detail Modal */}
+        {selectedRequest && (
+          <TimeOffRequestDetails
+            request={selectedRequest}
+            onClose={() => setSelectedRequest(null)}
           />
         )}
-      </div>
-    </div>
+
+        {/* Request History Section */}
+        <div className="card card-padding">
+          <h2 style={{ margin: '0 0 var(--space-4)', fontSize: 'var(--text-base)', color: 'var(--color-text-primary)' }}>
+            Request History
+          </h2>
+
+          {loading ? (
+            <div>
+              {[1, 2, 3].map((i) => (
+                <div key={i} style={{ padding: 'var(--space-3) 0', borderBottom: '1px solid var(--color-border)' }}>
+                  <div className="skeleton skeleton-text" style={{ width: '35%' }} />
+                  <div className="skeleton skeleton-text" style={{ width: '65%' }} />
+                </div>
+              ))}
+            </div>
+          ) : requests.length === 0 ? (
+            <div className="empty-state">
+              <div className="empty-state-icon">🌴</div>
+              <div className="empty-state-title">No Requests Found</div>
+              <p className="empty-state-desc">You have not submitted any leave requests yet.</p>
+            </div>
+          ) : (
+            <TimeOffRequestList
+              requests={requests}
+              onSelectRequest={(req) => setSelectedRequest(req)}
+            />
+          )}
+        </div>
+      </main>
+    </>
   );
 };
 

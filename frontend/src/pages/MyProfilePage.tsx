@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Navbar } from '../components/layout/Navbar';
 import { employeeService } from '../services/employee.service';
 import { TagListInput } from '../components/employees/TagListInput';
 import type { EmployeeProfile, UpdateEmployeeData } from '../types/employee.types';
@@ -88,271 +89,263 @@ export const MyProfilePage: React.FC = () => {
       .slice(0, 2);
   };
 
-  if (loading) {
-    return <div style={{ padding: '3rem', textAlign: 'center', color: '#666' }}>Loading your profile...</div>;
-  }
-
-  if (error || !profile) {
-    return (
-      <div style={{ maxWidth: '600px', margin: '2rem auto', padding: '2rem', textAlign: 'center', backgroundColor: '#ffe6e6', borderRadius: '8px' }}>
-        <h2 style={{ color: '#cc0000', marginTop: 0 }}>Unable to Load Profile</h2>
-        <p>{error || 'Your profile could not be loaded.'}</p>
-        <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', marginTop: '1rem' }}>
-          <button
-            onClick={fetchMyProfile}
-            style={{ padding: '0.5rem 1rem', backgroundColor: '#0066cc', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
-          >
-            Retry
-          </button>
-          <button
-            onClick={() => navigate('/employee')}
-            style={{ padding: '0.5rem 1rem', backgroundColor: '#666', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
-          >
-            Back to Dashboard
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div style={{ maxWidth: '900px', margin: '0 auto', padding: '2rem' }}>
-      <button
-        onClick={() => navigate('/employee')}
-        style={{ marginBottom: '1rem', background: 'none', border: 'none', color: '#0066cc', cursor: 'pointer', textDecoration: 'underline' }}
-      >
-        ← Back to Employee Dashboard
-      </button>
+    <>
+      <Navbar portalTitle="Employee Workspace" />
 
-      <div style={{ border: '1px solid #e0e0e0', borderRadius: '8px', padding: '2rem', backgroundColor: '#fff' }}>
-        {/* Banner header */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #eee', paddingBottom: '1.5rem', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
-            {profile.profileImage ? (
-              <img
-                src={profile.profileImage}
-                alt={profile.name}
-                style={{ width: '72px', height: '72px', borderRadius: '50%', objectFit: 'cover' }}
-              />
-            ) : (
-              <div
-                style={{
-                  width: '72px',
-                  height: '72px',
-                  borderRadius: '50%',
-                  backgroundColor: '#0066cc',
-                  color: '#fff',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '1.75rem',
-                  fontWeight: 'bold',
-                }}
-              >
-                {getInitials(profile.name || 'Employee')}
+      <main className="page-container" style={{ maxWidth: '960px' }}>
+        <button
+          onClick={() => navigate('/employee')}
+          className="back-link"
+        >
+          ← Back to Dashboard
+        </button>
+
+        {loading ? (
+          <div className="loading-box">
+            <div className="spinner" />
+            <span>Loading profile...</span>
+          </div>
+        ) : error || !profile ? (
+          <div className="empty-state">
+            <div className="empty-state-icon">❌</div>
+            <div className="empty-state-title">Profile Unavailable</div>
+            <p className="empty-state-desc">{error || 'Could not retrieve your employee profile.'}</p>
+            <button onClick={fetchMyProfile} className="btn btn-primary btn-sm" style={{ marginTop: 'var(--space-4)' }}>
+              Retry
+            </button>
+          </div>
+        ) : (
+          <div className="card card-padding">
+            {/* Banner header */}
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                borderBottom: '1px solid var(--color-border)',
+                paddingBottom: 'var(--space-6)',
+                marginBottom: 'var(--space-6)',
+                flexWrap: 'wrap',
+                gap: 'var(--space-4)',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-4)' }}>
+                {profile.profileImage ? (
+                  <img
+                    src={profile.profileImage}
+                    alt={profile.name}
+                    style={{ width: '64px', height: '64px', borderRadius: 'var(--radius-full)', objectFit: 'cover', border: '1px solid var(--color-border)' }}
+                  />
+                ) : (
+                  <div
+                    style={{
+                      width: '64px',
+                      height: '64px',
+                      borderRadius: 'var(--radius-full)',
+                      backgroundColor: 'var(--color-primary-light)',
+                      color: 'var(--color-primary)',
+                      border: '1px solid var(--color-primary-border)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: 'var(--text-xl)',
+                      fontWeight: 700,
+                    }}
+                  >
+                    {getInitials(profile.name || 'Employee')}
+                  </div>
+                )}
+
+                <div>
+                  <h1 style={{ margin: 0, fontSize: 'var(--text-xl)' }}>{profile.name}</h1>
+                  <p style={{ margin: '2px 0 0', color: 'var(--color-text-muted)', fontSize: 'var(--text-sm)' }}>
+                    {profile.designation || 'Staff'} • {profile.department || 'General'}
+                  </p>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
+                <button
+                  onClick={() => navigate('/employee/payroll')}
+                  className="btn btn-secondary"
+                >
+                  💰 View Payroll
+                </button>
+
+                <button
+                  onClick={() => {
+                    setSaveError(null);
+                    setSaveSuccess(false);
+                    setIsEditing(!isEditing);
+                  }}
+                  className={`btn ${isEditing ? 'btn-secondary' : 'btn-primary'}`}
+                >
+                  {isEditing ? 'Cancel' : 'Edit Profile'}
+                </button>
+              </div>
+            </div>
+
+            {saveSuccess && (
+              <div className="alert alert-success" style={{ marginBottom: 'var(--space-4)' }}>
+                <span>✓ Profile updated successfully!</span>
               </div>
             )}
 
-            <div>
-              <h1 style={{ margin: 0, fontSize: '1.75rem' }}>My Profile</h1>
-              <p style={{ margin: '0.25rem 0 0', color: '#666', fontSize: '1rem' }}>
-                {profile.name} • {profile.designation || 'Employee'}
-              </p>
-            </div>
-          </div>
+            {saveError && (
+              <div className="alert alert-error" style={{ marginBottom: 'var(--space-4)' }}>
+                <span>⚠️ {saveError}</span>
+              </div>
+            )}
 
-          <button
-            onClick={() => {
-              setSaveError(null);
-              setSaveSuccess(false);
-              setIsEditing(!isEditing);
-            }}
-            style={{
-              padding: '0.5rem 1rem',
-              backgroundColor: isEditing ? '#666' : '#0066cc',
-              color: '#fff',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer',
-              fontWeight: 500,
-            }}
-          >
-            {isEditing ? 'Cancel' : 'Edit Profile'}
-          </button>
-        </div>
+            {/* Edit mode vs View mode */}
+            {isEditing ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+                <h3 style={{ fontSize: 'var(--text-base)', color: 'var(--color-text-primary)' }}>Edit Profile Details</h3>
 
-        {saveSuccess && (
-          <div style={{ padding: '0.75rem', backgroundColor: '#e6f4ea', color: '#137333', borderRadius: '4px', marginBottom: '1rem' }}>
-            Profile updated successfully!
-          </div>
-        )}
+                <div className="form-group">
+                  <label className="form-label">Phone Number</label>
+                  <input
+                    type="text"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    className="form-input"
+                    placeholder="+1 555 0192"
+                  />
+                </div>
 
-        {saveError && (
-          <div style={{ padding: '0.75rem', backgroundColor: '#ffe6e6', color: '#cc0000', borderRadius: '4px', marginBottom: '1rem' }}>
-            {saveError}
-          </div>
-        )}
+                <div className="form-group">
+                  <label className="form-label">About / Bio</label>
+                  <textarea
+                    value={about}
+                    onChange={(e) => setAbout(e.target.value)}
+                    rows={3}
+                    className="form-textarea"
+                    placeholder="Tell your team about yourself..."
+                  />
+                </div>
 
-        {/* Edit mode vs View mode */}
-        {isEditing ? (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', backgroundColor: '#fafafa', padding: '1.5rem', borderRadius: '6px' }}>
-            <h3>Edit Allowed Profile Details</h3>
+                <TagListInput label="Skills & Technologies" items={skills} onChange={setSkills} placeholder="Add skill (e.g. React)..." />
+                <TagListInput label="Interests & Hobbies" items={interests} onChange={setInterests} placeholder="Add interest..." />
+                <TagListInput label="Certifications" items={certifications} onChange={setCertifications} placeholder="Add certification..." />
 
-            <div>
-              <label style={{ display: 'block', marginBottom: '0.25rem', fontWeight: 500 }}>Phone Number</label>
-              <input
-                type="text"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc', boxSizing: 'border-box' }}
-              />
-            </div>
+                <div style={{ display: 'flex', gap: 'var(--space-3)', justifyContent: 'flex-end', marginTop: 'var(--space-2)' }}>
+                  <button
+                    type="button"
+                    onClick={() => setIsEditing(false)}
+                    disabled={saving}
+                    className="btn btn-secondary"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleSaveProfile}
+                    disabled={saving}
+                    className="btn btn-primary"
+                  >
+                    {saving ? 'Saving...' : 'Save Changes'}
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 'var(--space-6)' }}>
+                {/* Private Info Column */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
+                  <h3 style={{ fontSize: 'var(--text-sm)', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-text-muted)' }}>
+                    Personal Details
+                  </h3>
 
-            <div>
-              <label style={{ display: 'block', marginBottom: '0.25rem', fontWeight: 500 }}>About</label>
-              <textarea
-                value={about}
-                onChange={(e) => setAbout(e.target.value)}
-                rows={3}
-                style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc', boxSizing: 'border-box' }}
-              />
-            </div>
-
-            <TagListInput label="Skills" items={skills} onChange={setSkills} placeholder="Add skill (e.g. React)..." />
-            <TagListInput label="Interests & Hobbies" items={interests} onChange={setInterests} placeholder="Add interest..." />
-            <TagListInput label="Certifications" items={certifications} onChange={setCertifications} placeholder="Add certification..." />
-
-            <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '1rem' }}>
-              <button
-                type="button"
-                onClick={() => setIsEditing(false)}
-                disabled={saving}
-                style={{ padding: '0.5rem 1rem', borderRadius: '4px', border: '1px solid #ccc', backgroundColor: '#fff', cursor: 'pointer' }}
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={handleSaveProfile}
-                disabled={saving}
-                style={{ padding: '0.5rem 1.25rem', borderRadius: '4px', border: 'none', backgroundColor: saving ? '#888' : '#0066cc', color: '#fff', cursor: saving ? 'not-allowed' : 'pointer' }}
-              >
-                {saving ? 'Saving...' : 'Save Changes'}
-              </button>
-            </div>
-          </div>
-        ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
-            {/* Private Info Column */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-              <div>
-                <h3 style={{ marginTop: 0, borderBottom: '2px solid #0066cc', paddingBottom: '0.5rem', display: 'inline-block' }}>
-                  Private Information
-                </h3>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginTop: '0.75rem' }}>
-                  <div>
-                    <strong>Full Name:</strong> <span style={{ color: '#444' }}>{profile.name}</span>
-                  </div>
-                  <div>
-                    <strong>Email:</strong> <span style={{ color: '#444' }}>{profile.email}</span>
-                  </div>
-                  <div>
-                    <strong>Phone:</strong> <span style={{ color: '#444' }}>{profile.phone || 'Not provided'}</span>
-                  </div>
-                  <div>
-                    <strong>Department:</strong> <span style={{ color: '#444' }}>{profile.department || 'N/A'}</span>
-                  </div>
-                  <div>
-                    <strong>Designation:</strong> <span style={{ color: '#444' }}>{profile.designation || 'N/A'}</span>
+                  <div style={{ backgroundColor: 'var(--color-bg-subtle)', padding: 'var(--space-4)', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)', display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
+                    <div>
+                      <span className="stat-label">Full Name</span>
+                      <div style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>{profile.name}</div>
+                    </div>
+                    <div>
+                      <span className="stat-label">Email Address</span>
+                      <div style={{ color: 'var(--color-text-primary)' }}>{profile.email}</div>
+                    </div>
+                    <div>
+                      <span className="stat-label">Phone</span>
+                      <div style={{ color: 'var(--color-text-primary)' }}>{profile.phone || 'Not provided'}</div>
+                    </div>
+                    <div>
+                      <span className="stat-label">Department</span>
+                      <div style={{ color: 'var(--color-text-primary)' }}>{profile.department || '—'}</div>
+                    </div>
+                    <div>
+                      <span className="stat-label">Login Account</span>
+                      <div style={{ fontFamily: 'var(--font-mono)', color: 'var(--color-text-primary)' }}>{profile.loginId || profile.id}</div>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <div>
-                <h3 style={{ borderBottom: '2px solid #0066cc', paddingBottom: '0.5rem', display: 'inline-block' }}>
-                  Security & Account
-                </h3>
-                <div style={{ marginTop: '0.75rem' }}>
-                  <strong>Login ID:</strong> <span style={{ color: '#444' }}>{profile.loginId || profile.id}</span>
+                {/* Profile Info Column */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
+                  <h3 style={{ fontSize: 'var(--text-sm)', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-text-muted)' }}>
+                    Background & Skills
+                  </h3>
+
+                  <div style={{ backgroundColor: 'var(--color-bg-subtle)', padding: 'var(--space-4)', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)', display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
+                    <div>
+                      <span className="stat-label">About Me</span>
+                      <p style={{ margin: 'var(--space-1) 0 0', color: 'var(--color-text-secondary)', fontSize: 'var(--text-sm)', whiteSpace: 'pre-wrap' }}>
+                        {profile.about || 'No about details provided yet.'}
+                      </p>
+                    </div>
+
+                    <div>
+                      <span className="stat-label">Skills</span>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-1)', marginTop: 'var(--space-1)' }}>
+                        {profile.skills && profile.skills.length > 0 ? (
+                          profile.skills.map((skill, idx) => (
+                            <span key={idx} className="badge badge-info" style={{ fontSize: '11px' }}>
+                              {skill}
+                            </span>
+                          ))
+                        ) : (
+                          <span style={{ color: 'var(--color-text-muted)', fontSize: 'var(--text-xs)' }}>No skills added.</span>
+                        )}
+                      </div>
+                    </div>
+
+                    <div>
+                      <span className="stat-label">Interests & Hobbies</span>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-1)', marginTop: 'var(--space-1)' }}>
+                        {profile.interests && profile.interests.length > 0 ? (
+                          profile.interests.map((interest, idx) => (
+                            <span key={idx} className="badge badge-neutral" style={{ fontSize: '11px' }}>
+                              {interest}
+                            </span>
+                          ))
+                        ) : (
+                          <span style={{ color: 'var(--color-text-muted)', fontSize: 'var(--text-xs)' }}>No interests added.</span>
+                        )}
+                      </div>
+                    </div>
+
+                    <div>
+                      <span className="stat-label">Certifications</span>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-1)', marginTop: 'var(--space-1)' }}>
+                        {profile.certifications && profile.certifications.length > 0 ? (
+                          profile.certifications.map((cert, idx) => (
+                            <span key={idx} className="badge badge-success" style={{ fontSize: '11px' }}>
+                              {cert}
+                            </span>
+                          ))
+                        ) : (
+                          <span style={{ color: 'var(--color-text-muted)', fontSize: 'var(--text-xs)' }}>No certifications added.</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
-
-              <div>
-                <h3 style={{ borderBottom: '2px solid #0066cc', paddingBottom: '0.5rem', display: 'inline-block' }}>
-                  Salary Info
-                </h3>
-                <div style={{ marginTop: '0.75rem', padding: '0.75rem', backgroundColor: '#f5f5f5', borderRadius: '4px', color: '#666', fontSize: '0.9rem' }}>
-                  🔒 Salary management will be connected in Phase 6.
-                </div>
-              </div>
-            </div>
-
-            {/* Profile Info Column */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-              <div>
-                <h3 style={{ marginTop: 0, borderBottom: '2px solid #0066cc', paddingBottom: '0.5rem', display: 'inline-block' }}>
-                  About Me
-                </h3>
-                <p style={{ margin: '0.75rem 0 0', color: '#555', whiteSpace: 'pre-wrap' }}>
-                  {profile.about || 'No about details provided yet.'}
-                </p>
-              </div>
-
-              <div>
-                <h3 style={{ borderBottom: '2px solid #0066cc', paddingBottom: '0.5rem', display: 'inline-block' }}>
-                  Skills
-                </h3>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem', marginTop: '0.75rem' }}>
-                  {profile.skills && profile.skills.length > 0 ? (
-                    profile.skills.map((skill, idx) => (
-                      <span key={idx} style={{ background: '#eef2f6', border: '1px solid #d0d7de', padding: '0.25rem 0.6rem', borderRadius: '14px', fontSize: '0.85rem' }}>
-                        {skill}
-                      </span>
-                    ))
-                  ) : (
-                    <span style={{ color: '#888', fontSize: '0.9rem' }}>No skills added.</span>
-                  )}
-                </div>
-              </div>
-
-              <div>
-                <h3 style={{ borderBottom: '2px solid #0066cc', paddingBottom: '0.5rem', display: 'inline-block' }}>
-                  Interests & Hobbies
-                </h3>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem', marginTop: '0.75rem' }}>
-                  {profile.interests && profile.interests.length > 0 ? (
-                    profile.interests.map((interest, idx) => (
-                      <span key={idx} style={{ background: '#eef2f6', border: '1px solid #d0d7de', padding: '0.25rem 0.6rem', borderRadius: '14px', fontSize: '0.85rem' }}>
-                        {interest}
-                      </span>
-                    ))
-                  ) : (
-                    <span style={{ color: '#888', fontSize: '0.9rem' }}>No interests added.</span>
-                  )}
-                </div>
-              </div>
-
-              <div>
-                <h3 style={{ borderBottom: '2px solid #0066cc', paddingBottom: '0.5rem', display: 'inline-block' }}>
-                  Certifications
-                </h3>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem', marginTop: '0.75rem' }}>
-                  {profile.certifications && profile.certifications.length > 0 ? (
-                    profile.certifications.map((cert, idx) => (
-                      <span key={idx} style={{ background: '#eef2f6', border: '1px solid #d0d7de', padding: '0.25rem 0.6rem', borderRadius: '14px', fontSize: '0.85rem' }}>
-                        {cert}
-                      </span>
-                    ))
-                  ) : (
-                    <span style={{ color: '#888', fontSize: '0.9rem' }}>No certifications added.</span>
-                  )}
-                </div>
-              </div>
-            </div>
+            )}
           </div>
         )}
-      </div>
-    </div>
+      </main>
+    </>
   );
 };
 

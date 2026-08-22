@@ -7,10 +7,7 @@ import type { Employee, EmployeeStatus } from '../../types/employee.types';
 const employeeSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   email: z.string().min(1, 'Email is required').email('Invalid email address'),
-<<<<<<< HEAD
   password: z.string().optional(),
-=======
->>>>>>> origin/main
   phone: z.string().optional(),
   department: z.string().optional(),
   designation: z.string().optional(),
@@ -44,10 +41,7 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
     defaultValues: {
       name: initialValues?.name || '',
       email: initialValues?.email || '',
-<<<<<<< HEAD
       password: '',
-=======
->>>>>>> origin/main
       phone: initialValues?.phone || '',
       department: initialValues?.department || '',
       designation: initialValues?.designation || '',
@@ -61,78 +55,78 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
   };
 
   return (
-    <form onSubmit={handleSubmit(handleFormSubmit)} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+    <form onSubmit={handleSubmit(handleFormSubmit)} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
       {apiError && (
-        <div style={{ padding: '0.75rem', backgroundColor: '#ffe6e6', color: '#cc0000', borderRadius: '4px', fontSize: '0.875rem' }}>
-          {apiError}
+        <div className="alert alert-error">
+          <span>⚠️ {apiError}</span>
         </div>
       )}
 
-      <div>
-        <label htmlFor="name" style={{ display: 'block', marginBottom: '0.25rem', fontWeight: 500 }}>
+      <div className="form-group">
+        <label htmlFor="name" className="form-label">
           Full Name *
         </label>
         <input
           id="name"
           type="text"
           {...register('name')}
-          style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc', boxSizing: 'border-box' }}
+          className="form-input"
+          placeholder="e.g. Jane Doe"
           disabled={isSubmitting}
         />
-        {errors.name && <span style={{ color: 'red', fontSize: '0.8rem' }}>{errors.name.message}</span>}
+        {errors.name && <span className="form-error">{errors.name.message}</span>}
       </div>
 
-      <div>
-        <label htmlFor="email" style={{ display: 'block', marginBottom: '0.25rem', fontWeight: 500 }}>
+      <div className="form-group">
+        <label htmlFor="email" className="form-label">
           Email Address *
         </label>
         <input
           id="email"
           type="email"
           {...register('email')}
-          style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc', boxSizing: 'border-box' }}
+          className="form-input"
+          placeholder="e.g. jane.doe@dayflow.local"
           disabled={isSubmitting}
         />
-        {errors.email && <span style={{ color: 'red', fontSize: '0.8rem' }}>{errors.email.message}</span>}
+        {errors.email && <span className="form-error">{errors.email.message}</span>}
       </div>
 
-<<<<<<< HEAD
       {/* Password field - only for creating new employees */}
       {!initialValues && (
-        <div>
-          <label htmlFor="password" style={{ display: 'block', marginBottom: '0.25rem', fontWeight: 500 }}>
-            Temporary Password
+        <div className="form-group">
+          <label htmlFor="password" className="form-label">
+            Account Password
           </label>
           <input
             id="password"
             type="password"
             {...register('password')}
             placeholder="Leave blank for default: Employee@123"
-            style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc', boxSizing: 'border-box' }}
+            className="form-input"
             disabled={isSubmitting}
           />
-          <span style={{ color: '#888', fontSize: '0.75rem' }}>Default: Employee@123</span>
+          <span className="form-hint">Default: Employee@123</span>
         </div>
       )}
 
-=======
->>>>>>> origin/main
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-        <div>
-          <label htmlFor="phone" style={{ display: 'block', marginBottom: '0.25rem', fontWeight: 500 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-4)' }}>
+        <div className="form-group">
+          <label htmlFor="phone" className="form-label">
             Phone Number
           </label>
           <input
             id="phone"
             type="text"
             {...register('phone')}
-            style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc', boxSizing: 'border-box' }}
+            placeholder="+1 555 0192"
+            className="form-input"
             disabled={isSubmitting}
           />
         </div>
 
-        <div>
-          <label htmlFor="department" style={{ display: 'block', marginBottom: '0.25rem', fontWeight: 500 }}>
+        <div className="form-group">
+          <label htmlFor="department" className="form-label">
             Department
           </label>
           <input
@@ -140,50 +134,50 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
             type="text"
             {...register('department')}
             placeholder="e.g. Engineering, HR"
-            style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc', boxSizing: 'border-box' }}
+            className="form-input"
             disabled={isSubmitting}
           />
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-        <div>
-          <label htmlFor="designation" style={{ display: 'block', marginBottom: '0.25rem', fontWeight: 500 }}>
-            Designation
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-4)' }}>
+        <div className="form-group">
+          <label htmlFor="designation" className="form-label">
+            Job Title / Designation
           </label>
           <input
             id="designation"
             type="text"
             {...register('designation')}
-            placeholder="e.g. Software Engineer"
-            style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc', boxSizing: 'border-box' }}
+            placeholder="e.g. Senior Software Engineer"
+            className="form-input"
             disabled={isSubmitting}
           />
         </div>
 
-        <div>
-          <label htmlFor="joiningDate" style={{ display: 'block', marginBottom: '0.25rem', fontWeight: 500 }}>
+        <div className="form-group">
+          <label htmlFor="joiningDate" className="form-label">
             Joining Date
           </label>
           <input
             id="joiningDate"
             type="date"
             {...register('joiningDate')}
-            style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc', boxSizing: 'border-box' }}
+            className="form-input"
             disabled={isSubmitting}
           />
         </div>
       </div>
 
       {initialValues && (
-        <div>
-          <label htmlFor="status" style={{ display: 'block', marginBottom: '0.25rem', fontWeight: 500 }}>
-            Status
+        <div className="form-group">
+          <label htmlFor="status" className="form-label">
+            Employment Status
           </label>
           <select
             id="status"
             {...register('status')}
-            style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc', boxSizing: 'border-box' }}
+            className="form-select"
             disabled={isSubmitting}
           >
             <option value="ACTIVE">ACTIVE</option>
@@ -192,13 +186,13 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
         </div>
       )}
 
-      <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '1rem' }}>
+      <div style={{ display: 'flex', gap: 'var(--space-3)', justifyContent: 'flex-end', marginTop: 'var(--space-2)' }}>
         {onCancel && (
           <button
             type="button"
             onClick={onCancel}
             disabled={isSubmitting}
-            style={{ padding: '0.5rem 1rem', borderRadius: '4px', border: '1px solid #ccc', backgroundColor: '#fff', cursor: 'pointer' }}
+            className="btn btn-secondary"
           >
             Cancel
           </button>
@@ -207,19 +201,13 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
         <button
           type="submit"
           disabled={isSubmitting}
-          style={{
-            padding: '0.5rem 1.25rem',
-            borderRadius: '4px',
-            border: 'none',
-            backgroundColor: isSubmitting ? '#888' : '#0066cc',
-            color: '#fff',
-            cursor: isSubmitting ? 'not-allowed' : 'pointer',
-            fontWeight: 500,
-          }}
+          className="btn btn-primary"
         >
-          {isSubmitting ? 'Submitting...' : submitButtonText}
+          {isSubmitting ? 'Saving...' : submitButtonText}
         </button>
       </div>
     </form>
   );
 };
+
+export default EmployeeForm;

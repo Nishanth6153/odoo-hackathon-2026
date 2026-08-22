@@ -33,81 +33,69 @@ export const EmployeeCard: React.FC<EmployeeCardProps> = ({ employee, onClick })
   return (
     <div
       onClick={handleClick}
-      style={{
-        border: '1px solid #e0e0e0',
-        borderRadius: '8px',
-        padding: '1.25rem',
-        backgroundColor: '#ffffff',
-        boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
-        cursor: 'pointer',
-        transition: 'transform 0.15s ease, box-shadow 0.15s ease',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '0.75rem',
-      }}
+      className="action-card"
+      style={{ gap: 'var(--space-3)' }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
         {employee.profileImage ? (
           <img
             src={employee.profileImage}
             alt={employee.name}
-            style={{ width: '48px', height: '48px', borderRadius: '50%', objectFit: 'cover' }}
+            style={{ width: '44px', height: '44px', borderRadius: 'var(--radius-full)', objectFit: 'cover', border: '1px solid var(--color-border)' }}
           />
         ) : (
           <div
             style={{
-              width: '48px',
-              height: '48px',
-              borderRadius: '50%',
-              backgroundColor: '#0066cc',
-              color: '#ffffff',
+              width: '44px',
+              height: '44px',
+              borderRadius: 'var(--radius-full)',
+              backgroundColor: 'var(--color-primary-light)',
+              color: 'var(--color-primary)',
+              border: '1px solid var(--color-primary-border)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              fontWeight: 'bold',
-              fontSize: '1.1rem',
+              fontWeight: 700,
+              fontSize: 'var(--text-sm)',
             }}
           >
             {getInitials(employee.name || 'User')}
           </div>
         )}
 
-        <div style={{ flex: 1, overflow: 'hidden' }}>
-          <h3 style={{ margin: 0, fontSize: '1.1rem', color: '#111', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <h3 style={{ margin: 0, fontSize: 'var(--text-base)', color: 'var(--color-text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
             {employee.name}
           </h3>
-          <p style={{ margin: '0.2rem 0 0', fontSize: '0.875rem', color: '#666', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-            {employee.designation || 'No Designation'}
+          <p style={{ margin: '2px 0 0', fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            {employee.designation || 'Staff'}
           </p>
         </div>
 
-        <span
-          style={{
-            fontSize: '0.75rem',
-            padding: '0.25rem 0.5rem',
-            borderRadius: '12px',
-            fontWeight: '600',
-            backgroundColor: isActive ? '#e6f4ea' : '#feefe3',
-            color: isActive ? '#137333' : '#b06000',
-          }}
-        >
+        <span className={`badge ${isActive ? 'badge-success' : 'badge-neutral'}`}>
+          <span className="badge-dot" />
           {employee.status || 'ACTIVE'}
         </span>
       </div>
 
-      <div style={{ borderTop: '1px solid #f0f0f0', paddingTop: '0.75rem', fontSize: '0.85rem', color: '#555', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-        <div>
-          <strong>Dept:</strong> {employee.department || 'N/A'}
+      <div style={{ borderTop: '1px solid var(--color-border)', paddingTop: 'var(--space-3)', fontSize: 'var(--text-xs)', color: 'var(--color-text-secondary)', display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <span style={{ color: 'var(--color-text-muted)' }}>Department</span>
+          <strong>{employee.department || '—'}</strong>
         </div>
-        <div>
-          <strong>Email:</strong> {employee.email}
+        <div style={{ display: 'flex', justifyContent: 'space-between', overflow: 'hidden' }}>
+          <span style={{ color: 'var(--color-text-muted)' }}>Email</span>
+          <span style={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', maxWidth: '170px' }}>{employee.email}</span>
         </div>
         {employee.loginId && (
-          <div>
-            <strong>Login ID:</strong> {employee.loginId}
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <span style={{ color: 'var(--color-text-muted)' }}>ID</span>
+            <span style={{ fontFamily: 'var(--font-mono)' }}>{employee.loginId}</span>
           </div>
         )}
       </div>
     </div>
   );
 };
+
+export default EmployeeCard;
