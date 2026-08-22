@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import { employeeService } from '../services/employee.service';
 import { EmployeeForm, type EmployeeFormData } from '../components/employees/EmployeeForm';
 import { TagListInput } from '../components/employees/TagListInput';
@@ -8,6 +9,7 @@ import type { EmployeeProfile } from '../types/employee.types';
 export const EmployeeDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const [employee, setEmployee] = useState<EmployeeProfile | null>(null);
   const [loading, setLoading] = useState(true);
@@ -85,6 +87,8 @@ export const EmployeeDetailPage: React.FC = () => {
       .slice(0, 2);
   };
 
+  const canViewSalary = user?.role === 'ADMIN' || user?.role === 'HR';
+
   if (loading) {
     return <div style={{ padding: '3rem', textAlign: 'center', color: '#666' }}>Loading employee details...</div>;
   }
@@ -114,7 +118,7 @@ export const EmployeeDetailPage: React.FC = () => {
       </button>
 
       <div style={{ border: '1px solid #e0e0e0', borderRadius: '8px', padding: '2rem', backgroundColor: '#fff' }}>
-        {/* Header section with avatar, name, status, and edit button */}
+        {/* Header section with avatar, name, status, and edit / salary buttons */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid #eee', paddingBottom: '1.5rem', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
             {employee.profileImage ? (
@@ -164,20 +168,39 @@ export const EmployeeDetailPage: React.FC = () => {
             </div>
           </div>
 
-          <button
-            onClick={() => setIsEditing(!isEditing)}
-            style={{
-              padding: '0.5rem 1rem',
-              backgroundColor: isEditing ? '#666' : '#0066cc',
-              color: '#fff',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer',
-              fontWeight: 500,
-            }}
-          >
-            {isEditing ? 'Cancel Editing' : 'Edit Profile'}
-          </button>
+          <div style={{ display: 'flex', gap: '0.75rem' }}>
+            {canViewSalary && (
+              <button
+                onClick={() => navigate(`/admin/employees/${id}/salary`)}
+                style={{
+                  padding: '0.5rem 1rem',
+                  backgroundColor: '#137333',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  fontWeight: 500,
+                }}
+              >
+                💼 Salary & Compensation
+              </button>
+            )}
+
+            <button
+              onClick={() => setIsEditing(!isEditing)}
+              style={{
+                padding: '0.5rem 1rem',
+                backgroundColor: isEditing ? '#666' : '#0066cc',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                fontWeight: 500,
+              }}
+            >
+              {isEditing ? 'Cancel Editing' : 'Edit Profile'}
+            </button>
+          </div>
         </div>
 
         {/* Edit mode vs View mode */}
