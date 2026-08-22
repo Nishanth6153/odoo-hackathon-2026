@@ -1,0 +1,104 @@
+// Dayflow HRMS Prisma Schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  EMPLOYEE
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  HALF_DAY
+  LEAVE
+}
+
+enum LeaveType {
+  PAID
+  SICK
+  UNPAID
+}
+
+enum LeaveStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model User {
+  id              String    @id @default(uuid())
+  email           String    @unique
+  password        String
+  role            Role      @default(EMPLOYEE)
+  isEmailVerified Boolean   @default(false)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  employee        Employee?
+}
+
+model Employee {
+  id             String         @id @default(uuid())
+  userId         String         @unique
+  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  employeeId     String         @unique
+  name           String
+  phone          String?
+  address        String?
+  jobTitle       String
+  profilePicture String?
+  documents      String?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  attendances    Attendance[]
+  leaveRequests  LeaveRequest[]
+  salary         Salary?
+}
+
+model Attendance {
+  id         String           @id @default(uuid())
+  employeeId String
+  employee   Employee         @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  date       DateTime
+  checkIn    DateTime?
+  checkOut   DateTime?
+  status     AttendanceStatus @default(PRESENT)
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+
+  @@unique([employeeId, date])
+}
+
+model LeaveRequest {
+  id           String      @id @default(uuid())
+  employeeId   String
+  employee     Employee    @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  leaveType    LeaveType
+  startDate    DateTime
+  endDate      DateTime
+  remarks      String?
+  status       LeaveStatus @default(PENDING)
+  adminComment String?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+}
+
+model Salary {
+  id         String   @id @default(uuid())
+  employeeId String   @unique
+  employee   Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  baseSalary Float
+  allowances Float    @default(0)
+  deductions Float    @default(0)
+  netSalary  Float
+  details    String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
