@@ -14,6 +14,31 @@ const getHeaders = () => {
   };
 };
 
+const normalizeTimeOff = (raw: Record<string, unknown>): TimeOffRequest => {
+  const item = raw || {};
+  const emp = (item.employee || item.user || {}) as Record<string, unknown>;
+
+  return {
+    id: String(item.id || item._id || ''),
+    employeeId: String(item.employeeId || item.employee_id || item.userId || item.user_id || emp.id || ''),
+    employeeName: String(item.employeeName || item.employee_name || emp.name || item.name || ''),
+    employeeEmail: String(item.employeeEmail || item.employee_email || emp.email || item.email || ''),
+    department: String(item.department || emp.department || ''),
+    type: (item.type as TimeOffRequest['type']) || 'PAID_TIME_OFF',
+    startDate: String(item.startDate || item.start_date || ''),
+    endDate: String(item.endDate || item.end_date || ''),
+    days: typeof item.days === 'number' ? item.days : typeof item.numberOfDays === 'number' ? item.numberOfDays : typeof item.number_of_days === 'number' ? item.number_of_days : undefined,
+    numberOfDays: typeof item.numberOfDays === 'number' ? item.numberOfDays : typeof item.number_of_days === 'number' ? item.number_of_days : typeof item.days === 'number' ? item.days : undefined,
+    reason: String(item.reason || ''),
+    attachmentUrl: (item.attachmentUrl || item.attachment_url || null) as string | null,
+    status: (item.status as TimeOffRequest['status']) || 'PENDING',
+    createdAt: (item.createdAt || item.created_at) as string | undefined,
+    updatedAt: (item.updatedAt || item.updated_at) as string | undefined,
+    approvedAt: (item.approvedAt || item.approved_at || null) as string | null,
+    rejectedAt: (item.rejectedAt || item.rejected_at || null) as string | null,
+  };
+};
+
 export const timeOffService = {
   async createTimeOffRequest(data: CreateTimeOffData): Promise<TimeOffRequest> {
     const res = await fetch(`${API_URL}/api/timeoff`, {
@@ -29,8 +54,8 @@ export const timeOffService = {
       throw new Error(errorMessage);
     }
 
-    const request: TimeOffRequest = resData?.request || resData?.data || resData;
-    return request;
+    const rawRecord = (resData?.request || resData?.data || resData) as Record<string, unknown>;
+    return normalizeTimeOff(rawRecord);
   },
 
   async getMyTimeOffRequests(): Promise<TimeOffRequest[]> {
@@ -46,7 +71,7 @@ export const timeOffService = {
       throw new Error(errorMessage);
     }
 
-    const requests: TimeOffRequest[] = Array.isArray(resData)
+    const rawRecords = Array.isArray(resData)
       ? resData
       : Array.isArray(resData?.requests)
       ? resData.requests
@@ -54,7 +79,7 @@ export const timeOffService = {
       ? resData.data
       : [];
 
-    return requests;
+    return rawRecords.map(normalizeTimeOff);
   },
 
   async getTimeOffRequests(): Promise<TimeOffRequest[]> {
@@ -70,7 +95,7 @@ export const timeOffService = {
       throw new Error(errorMessage);
     }
 
-    const requests: TimeOffRequest[] = Array.isArray(resData)
+    const rawRecords = Array.isArray(resData)
       ? resData
       : Array.isArray(resData?.requests)
       ? resData.requests
@@ -78,7 +103,7 @@ export const timeOffService = {
       ? resData.data
       : [];
 
-    return requests;
+    return rawRecords.map(normalizeTimeOff);
   },
 
   async getTimeOffRequestById(id: string): Promise<TimeOffRequest> {
@@ -94,8 +119,8 @@ export const timeOffService = {
       throw new Error(errorMessage);
     }
 
-    const request: TimeOffRequest = resData?.request || resData?.data || resData;
-    return request;
+    const rawRecord = (resData?.request || resData?.data || resData) as Record<string, unknown>;
+    return normalizeTimeOff(rawRecord);
   },
 
   async approveTimeOffRequest(id: string): Promise<TimeOffRequest> {
@@ -111,8 +136,8 @@ export const timeOffService = {
       throw new Error(errorMessage);
     }
 
-    const request: TimeOffRequest = resData?.request || resData?.data || resData;
-    return request;
+    const rawRecord = (resData?.request || resData?.data || resData) as Record<string, unknown>;
+    return normalizeTimeOff(rawRecord);
   },
 
   async rejectTimeOffRequest(id: string): Promise<TimeOffRequest> {
@@ -128,8 +153,8 @@ export const timeOffService = {
       throw new Error(errorMessage);
     }
 
-    const request: TimeOffRequest = resData?.request || resData?.data || resData;
-    return request;
+    const rawRecord = (resData?.request || resData?.data || resData) as Record<string, unknown>;
+    return normalizeTimeOff(rawRecord);
   },
 
   async getLeaveBalances(): Promise<LeaveBalances | null> {
@@ -144,7 +169,12 @@ export const timeOffService = {
       const resData = await res.json().catch(() => null);
       if (!resData) return null;
 
-      return resData?.balances || resData?.data || resData;
+      const raw = (resData?.balances || resData?.data || resData) as Record<string, unknown>;
+      return {
+        paidTimeOff: typeof raw.paidTimeOff === 'number' ? raw.paidTimeOff : typeof raw.paid_time_off === 'number' ? raw.paid_time_off : undefined,
+        sickLeave: typeof raw.sickLeave === 'number' ? raw.sickLeave : typeof raw.sick_leave === 'number' ? raw.sick_leave : undefined,
+        unpaidLeave: typeof raw.unpaidLeave === 'number' ? raw.unpaidLeave : typeof raw.unpaid_leave === 'number' ? raw.unpaid_leave : undefined,
+      };
     } catch {
       return null;
     }
