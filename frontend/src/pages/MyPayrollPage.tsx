@@ -68,37 +68,37 @@ export const MyPayrollPage: React.FC = () => {
         ) : salary ? (
           <>
             {/* Summary Cards */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 'var(--space-4)', marginBottom: 'var(--space-6)' }}>
-              <div className="stat-card">
+            <div className="stat-grid-container" style={{ marginBottom: 'var(--space-8)' }}>
+              <div className="stat-grid-cell">
                 <span className="stat-label">Base Wage</span>
-                <div className="stat-value" style={{ color: 'var(--color-primary)' }}>
+                <div className="stat-value">
                   {fmt(salary.monthlyWage)}
                 </div>
                 <span className="stat-subtext">Monthly base wage</span>
               </div>
 
-              <div className="stat-card">
+              <div className="stat-grid-cell">
                 <span className="stat-label">Total Earnings</span>
-                <div className="stat-value" style={{ color: 'var(--color-success)' }}>
+                <div className="stat-value">
                   {fmt(salary.totalEarnings)}
                 </div>
                 <span className="stat-subtext">Allowances & gross additions</span>
               </div>
 
-              <div className="stat-card">
+              <div className="stat-grid-cell">
                 <span className="stat-label">Total Deductions</span>
-                <div className="stat-value" style={{ color: 'var(--color-error)' }}>
+                <div className="stat-value">
                   {fmt(salary.totalDeductions)}
                 </div>
                 <span className="stat-subtext">Tax & deductions</span>
               </div>
 
-              <div className="stat-card">
+              <div className="stat-grid-cell">
                 <span className="stat-label">Net Monthly Salary</span>
-                <div className="stat-value" style={{ color: 'var(--color-purple)' }}>
+                <div className="stat-value" style={{ color: 'var(--color-text-primary)' }}>
                   {fmt(salary.netMonthlyAmount)}
                 </div>
-                <span className="stat-subtext">Estimated net pay</span>
+                <span className="stat-subtext">Estimated take-home pay</span>
               </div>
             </div>
 

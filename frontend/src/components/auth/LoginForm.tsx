@@ -62,14 +62,24 @@ export const LoginForm: React.FC = () => {
   };
 
   return (
-    <div className="card card-padding" style={{ maxWidth: '420px', width: '100%', margin: '0 auto', boxShadow: 'var(--shadow-lg)' }}>
+    <div
+      className="card card-padding"
+      style={{
+        maxWidth: '440px',
+        width: '100%',
+        margin: '0 auto',
+        border: '1px solid var(--color-border-dark)',
+        boxShadow: '0 8px 30px rgba(18, 19, 22, 0.08)',
+        borderRadius: 'var(--radius-xl)',
+      }}
+    >
       {/* Brand Header */}
       <div style={{ textAlign: 'center', marginBottom: 'var(--space-6)' }}>
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--space-2)', marginBottom: 'var(--space-2)' }}>
-          <span className="nav-brand-badge" style={{ fontSize: 'var(--text-sm)', padding: '6px 12px' }}>DAYFLOW</span>
-          <span style={{ fontWeight: 700, fontSize: 'var(--text-lg)', color: 'var(--color-text-primary)' }}>HRMS</span>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--space-2)', marginBottom: 'var(--space-3)' }}>
+          <span className="nav-brand-badge" style={{ fontSize: 'var(--text-xs)', padding: '5px 10px' }}>DAYFLOW</span>
+          <span style={{ fontWeight: 800, fontFamily: 'var(--font-display)', fontSize: 'var(--text-lg)', color: 'var(--color-text-primary)' }}>HRMS</span>
         </div>
-        <h2 style={{ fontSize: 'var(--text-xl)', color: 'var(--color-text-primary)' }}>Sign In to Your Portal</h2>
+        <h2 style={{ fontSize: 'var(--text-2xl)', color: 'var(--color-text-primary)', letterSpacing: '-0.025em' }}>Sign In to Dayflow</h2>
         <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-muted)', marginTop: 'var(--space-1)' }}>
           Enter your organization credentials to proceed
         </p>
@@ -120,16 +130,16 @@ export const LoginForm: React.FC = () => {
           type="submit"
           disabled={isSubmitting}
           className="btn btn-primary btn-lg"
-          style={{ width: '100%', marginTop: 'var(--space-2)' }}
+          style={{ width: '100%', marginTop: 'var(--space-3)' }}
         >
-          {isSubmitting ? 'Authenticating...' : 'Sign In'}
+          {isSubmitting ? 'Authenticating...' : 'Sign In →'}
         </button>
       </form>
 
       {/* Quick Demo Shortcuts */}
       <div style={{ marginTop: 'var(--space-6)', borderTop: '1px solid var(--color-border)', paddingTop: 'var(--space-4)' }}>
-        <span style={{ display: 'block', fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)', textAlign: 'center', marginBottom: 'var(--space-2)' }}>
-          Quick Demo Credentials:
+        <span style={{ display: 'block', fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--color-text-muted)', textAlign: 'center', marginBottom: 'var(--space-2)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+          DEMO LOGINS
         </span>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-2)' }}>
           <button
@@ -137,14 +147,14 @@ export const LoginForm: React.FC = () => {
             onClick={() => fillCredentials('admin@dayflow.local', 'Admin@123')}
             className="btn btn-secondary btn-sm"
           >
-            👑 Admin / HR
+            Admin / HR
           </button>
           <button
             type="button"
             onClick={() => fillCredentials('employee@dayflow.local', 'Employee@123')}
             className="btn btn-secondary btn-sm"
           >
-            👤 Employee
+            Employee
           </button>
         </div>
       </div>

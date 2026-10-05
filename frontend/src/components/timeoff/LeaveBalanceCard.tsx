@@ -11,32 +11,29 @@ export const LeaveBalanceCard: React.FC<LeaveBalanceCardProps> = ({ balances, lo
     {
       title: 'Paid Time Off',
       value: balances?.paidTimeOff !== undefined ? `${balances.paidTimeOff} Days` : '15 Days',
-      color: 'var(--color-primary)',
       subtext: 'Standard Annual Allowance',
     },
     {
       title: 'Sick Leave',
       value: balances?.sickLeave !== undefined ? `${balances.sickLeave} Days` : '10 Days',
-      color: 'var(--color-success)',
       subtext: 'Medical & Health Leaves',
     },
     {
       title: 'Unpaid Leave',
       value: balances?.unpaidLeave !== undefined ? `${balances.unpaidLeave} Days` : '0 Days',
-      color: 'var(--color-warning)',
       subtext: 'Discretionary Leaves',
     },
   ];
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 'var(--space-4)', marginBottom: 'var(--space-6)' }}>
+    <div className="stat-grid-container" style={{ marginBottom: 'var(--space-6)' }}>
       {cards.map((card, idx) => (
-        <div key={idx} className="stat-card">
+        <div key={idx} className="stat-grid-cell">
           <span className="stat-label">{card.title}</span>
           {loading ? (
             <div className="skeleton skeleton-stat" style={{ width: '50%' }} />
           ) : (
-            <div className="stat-value" style={{ color: card.color }}>
+            <div className="stat-value">
               {card.value}
             </div>
           )}
