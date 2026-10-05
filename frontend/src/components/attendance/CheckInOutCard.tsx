@@ -84,7 +84,7 @@ export const CheckInOutCard: React.FC<CheckInOutCardProps> = ({ todayRecord, onS
       setError(null);
       setSuccessMessage(null);
       await attendanceService.checkIn();
-      setSuccessMessage('Successfully checked in! Shift duration is now being tracked.');
+      setSuccessMessage('Check-in confirmed. Shift duration is now actively tracking.');
       onStatusChange();
     } catch (err: unknown) {
       if (err instanceof Error) {
@@ -103,7 +103,7 @@ export const CheckInOutCard: React.FC<CheckInOutCardProps> = ({ todayRecord, onS
       setError(null);
       setSuccessMessage(null);
       await attendanceService.checkOut();
-      setSuccessMessage('Successfully checked out! Shift recorded.');
+      setSuccessMessage('Check-out recorded. Total workday hours saved.');
       onStatusChange();
     } catch (err: unknown) {
       if (err instanceof Error) {
@@ -132,27 +132,27 @@ export const CheckInOutCard: React.FC<CheckInOutCardProps> = ({ todayRecord, onS
       {/* Top Status Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-5)', flexWrap: 'wrap', gap: 'var(--space-2)' }}>
         <div>
-          <span style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600 }}>
-            Attendance Terminal
+          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+            TERMINAL // ATTENDANCE
           </span>
-          <div style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)', fontWeight: 500 }}>
+          <div style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-primary)', fontWeight: 600 }}>
             {formattedCurrentDate}
           </div>
         </div>
 
-        {/* Dynamic Live State Pill */}
+        {/* State Pill */}
         {!hasCheckedIn ? (
-          <span className="badge badge-neutral" style={{ padding: '4px 10px' }}>
+          <span className="badge badge-neutral" style={{ padding: '3px 9px' }}>
             <span className="badge-dot" />
-            Not Checked In
+            NOT CHECKED IN
           </span>
         ) : isWorking ? (
-          <span className="badge badge-success" style={{ padding: '4px 10px', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+          <span className="badge badge-success" style={{ padding: '3px 9px', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
             <span className="badge-pulse" />
             YOU'RE WORKING
           </span>
         ) : (
-          <span className="badge badge-success" style={{ padding: '4px 10px' }}>
+          <span className="badge badge-success" style={{ padding: '3px 9px' }}>
             ✓ WORKDAY COMPLETE
           </span>
         )}
@@ -176,29 +176,29 @@ export const CheckInOutCard: React.FC<CheckInOutCardProps> = ({ todayRecord, onS
         <div>
           <div
             style={{
-              padding: 'var(--space-6)',
-              backgroundColor: 'var(--color-bg-subtle)',
+              padding: 'var(--space-8) var(--space-6)',
+              backgroundColor: 'var(--color-surface-warm)',
               borderRadius: 'var(--radius-lg)',
               border: '1px solid var(--color-border)',
               textAlign: 'center',
               marginBottom: 'var(--space-5)',
             }}
           >
-            <div style={{ fontSize: 'var(--text-4xl)', fontWeight: 700, fontFamily: 'var(--font-mono)', color: 'var(--color-text-primary)', letterSpacing: '0.02em' }}>
+            <div style={{ fontSize: 'var(--text-5xl)', fontWeight: 800, fontFamily: 'var(--font-mono)', color: 'var(--color-text-primary)', letterSpacing: '-0.03em' }}>
               {currentTime}
             </div>
             <p style={{ color: 'var(--color-text-muted)', fontSize: 'var(--text-sm)', marginTop: 'var(--space-2)' }}>
-              You haven't checked in for today yet. Punch in to begin recording your shift.
+              No punch recorded for today yet. Check in to start tracking active hours.
             </p>
           </div>
 
           <button
             onClick={handleCheckIn}
             disabled={isSubmitting}
-            className="btn btn-success btn-lg"
-            style={{ width: '100%', fontSize: 'var(--text-base)', fontWeight: 600 }}
+            className="btn btn-primary btn-lg"
+            style={{ width: '100%', fontSize: 'var(--text-base)' }}
           >
-            {isSubmitting ? 'Recording Check-In...' : '⏱️ Check In'}
+            {isSubmitting ? 'Recording Check-In...' : '⏱️ Check In For Today →'}
           </button>
         </div>
       )}
@@ -212,7 +212,7 @@ export const CheckInOutCard: React.FC<CheckInOutCardProps> = ({ todayRecord, onS
               gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
               gap: 'var(--space-4)',
               backgroundColor: 'var(--color-success-bg)',
-              padding: 'var(--space-5)',
+              padding: 'var(--space-6)',
               borderRadius: 'var(--radius-lg)',
               border: '1px solid var(--color-success-border)',
               marginBottom: 'var(--space-5)',
@@ -220,15 +220,15 @@ export const CheckInOutCard: React.FC<CheckInOutCardProps> = ({ todayRecord, onS
           >
             <div>
               <span className="stat-label" style={{ color: 'var(--color-success-text)' }}>Check-In Time</span>
-              <div style={{ fontSize: 'var(--text-xl)', fontWeight: 700, color: 'var(--color-success-text)', marginTop: '2px', fontFamily: 'var(--font-mono)' }}>
+              <div style={{ fontSize: 'var(--text-2xl)', fontWeight: 800, color: 'var(--color-success-text)', marginTop: '2px', fontFamily: 'var(--font-mono)' }}>
                 {formatTimestamp(todayRecord?.checkIn)}
               </div>
-              <span style={{ fontSize: 'var(--text-xs)', color: 'var(--color-success-text)', opacity: 0.85 }}>Punch verified</span>
+              <span style={{ fontSize: 'var(--text-xs)', color: 'var(--color-success-text)', opacity: 0.85 }}>Verified in database</span>
             </div>
 
             <div>
-              <span className="stat-label" style={{ color: 'var(--color-success-text)' }}>Live Elapsed Duration</span>
-              <div style={{ fontSize: 'var(--text-xl)', fontWeight: 700, color: 'var(--color-success-text)', marginTop: '2px', fontFamily: 'var(--font-mono)' }}>
+              <span className="stat-label" style={{ color: 'var(--color-success-text)' }}>Live Elapsed Shift</span>
+              <div style={{ fontSize: 'var(--text-2xl)', fontWeight: 800, color: 'var(--color-success-text)', marginTop: '2px', fontFamily: 'var(--font-mono)' }}>
                 {formatElapsed(elapsedSeconds)}
               </div>
               <span style={{ fontSize: 'var(--text-xs)', color: 'var(--color-success-text)', opacity: 0.85 }}>Ticking in real-time</span>
@@ -239,9 +239,9 @@ export const CheckInOutCard: React.FC<CheckInOutCardProps> = ({ todayRecord, onS
             onClick={handleCheckOut}
             disabled={isSubmitting}
             className="btn btn-danger btn-lg"
-            style={{ width: '100%', fontSize: 'var(--text-base)', fontWeight: 600 }}
+            style={{ width: '100%', fontSize: 'var(--text-base)' }}
           >
-            {isSubmitting ? 'Recording Check-Out...' : '🚪 Check Out'}
+            {isSubmitting ? 'Recording Check-Out...' : '🚪 Check Out / End Shift →'}
           </button>
         </div>
       )}
@@ -254,7 +254,7 @@ export const CheckInOutCard: React.FC<CheckInOutCardProps> = ({ todayRecord, onS
               display: 'grid',
               gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
               gap: 'var(--space-4)',
-              backgroundColor: 'var(--color-bg-subtle)',
+              backgroundColor: 'var(--color-surface-warm)',
               padding: 'var(--space-5)',
               borderRadius: 'var(--radius-lg)',
               border: '1px solid var(--color-border)',
@@ -263,21 +263,21 @@ export const CheckInOutCard: React.FC<CheckInOutCardProps> = ({ todayRecord, onS
           >
             <div>
               <span className="stat-label">Actual Check-In</span>
-              <div style={{ fontSize: 'var(--text-base)', fontWeight: 600, color: 'var(--color-text-primary)', marginTop: '2px', fontFamily: 'var(--font-mono)' }}>
+              <div style={{ fontSize: 'var(--text-base)', fontWeight: 700, color: 'var(--color-text-primary)', marginTop: '2px', fontFamily: 'var(--font-mono)' }}>
                 {formatTimestamp(todayRecord?.checkIn)}
               </div>
             </div>
 
             <div>
               <span className="stat-label">Actual Check-Out</span>
-              <div style={{ fontSize: 'var(--text-base)', fontWeight: 600, color: 'var(--color-text-primary)', marginTop: '2px', fontFamily: 'var(--font-mono)' }}>
+              <div style={{ fontSize: 'var(--text-base)', fontWeight: 700, color: 'var(--color-text-primary)', marginTop: '2px', fontFamily: 'var(--font-mono)' }}>
                 {formatTimestamp(todayRecord?.checkOut)}
               </div>
             </div>
 
             <div>
-              <span className="stat-label">Total Worked</span>
-              <div style={{ fontSize: 'var(--text-base)', fontWeight: 700, color: 'var(--color-success)', marginTop: '2px', fontFamily: 'var(--font-mono)' }}>
+              <span className="stat-label">Total Duration</span>
+              <div style={{ fontSize: 'var(--text-base)', fontWeight: 800, color: 'var(--color-success)', marginTop: '2px', fontFamily: 'var(--font-mono)' }}>
                 {formatMinutes(todayRecord?.workMinutes)}
               </div>
             </div>
@@ -285,9 +285,9 @@ export const CheckInOutCard: React.FC<CheckInOutCardProps> = ({ todayRecord, onS
 
           <div
             className="alert alert-success"
-            style={{ justifyContent: 'center', margin: 0, fontWeight: 500, padding: 'var(--space-3)' }}
+            style={{ justifyContent: 'center', margin: 0, fontWeight: 600, padding: 'var(--space-3)' }}
           >
-            ✓ Workday recorded and synced with monthly payroll logs.
+            ✓ Shift complete and synced with payroll calculation logs.
           </div>
         </div>
       )}

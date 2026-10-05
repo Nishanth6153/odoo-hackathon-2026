@@ -87,7 +87,7 @@ export const EmployeePage: React.FC = () => {
       setError(null);
       setSuccessMsg(null);
       await attendanceService.checkIn();
-      setSuccessMsg('Successfully checked in! Shift duration is now actively recording.');
+      setSuccessMsg('Checked in successfully! Shift duration is now actively tracking.');
       await fetchDashboard();
     } catch (err: any) {
       setError(err.message || 'Check-in failed.');
@@ -102,7 +102,7 @@ export const EmployeePage: React.FC = () => {
       setError(null);
       setSuccessMsg(null);
       await attendanceService.checkOut();
-      setSuccessMsg('Successfully checked out! Shift recorded and saved.');
+      setSuccessMsg('Checked out successfully! Workday recorded.');
       await fetchDashboard();
     } catch (err: any) {
       setError(err.message || 'Check-out failed.');
@@ -120,7 +120,7 @@ export const EmployeePage: React.FC = () => {
         <div className="page-header">
           <div className="page-title-group">
             <h1>Employee Workspace</h1>
-            <p>Real-time attendance, leave entitlement balance, and payroll summary</p>
+            <p>Your personnel portal for attendance terminal, leave balance, and compensation details</p>
           </div>
 
           <div style={{ display: 'flex', gap: 'var(--space-3)', alignItems: 'center' }}>
@@ -129,7 +129,7 @@ export const EmployeePage: React.FC = () => {
               disabled={loading}
               className="btn btn-secondary btn-sm"
             >
-              🔄 Refresh
+              ↻ Refresh
             </button>
           </div>
         </div>
@@ -149,23 +149,23 @@ export const EmployeePage: React.FC = () => {
           </div>
         )}
 
-        {/* SIGNATURE ATTENDANCE HERO BANNER */}
+        {/* ATTENDANCE TERMINAL HERO BANNER */}
         <div
           className="card card-padding"
           style={{
-            marginBottom: 'var(--space-6)',
+            marginBottom: 'var(--space-8)',
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
             flexWrap: 'wrap',
             gap: 'var(--space-4)',
-            backgroundColor: isWorking ? 'var(--color-success-bg)' : undefined,
-            borderColor: isWorking ? 'var(--color-success-border)' : undefined,
+            backgroundColor: isWorking ? 'var(--color-success-bg)' : 'var(--color-surface)',
+            borderColor: isWorking ? 'var(--color-success-border)' : 'var(--color-border)',
           }}
         >
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
-              <h2 style={{ margin: 0, fontSize: 'var(--text-lg)', color: 'var(--color-text-primary)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
+              <h2 style={{ margin: 0, fontSize: 'var(--text-xl)', color: 'var(--color-text-primary)' }}>
                 {data?.profile?.name || user?.name || 'Employee Member'}
               </h2>
               {isWorking ? (
@@ -180,21 +180,16 @@ export const EmployeePage: React.FC = () => {
               ) : (
                 <span className="badge badge-neutral" style={{ padding: '3px 8px' }}>
                   <span className="badge-dot" />
-                  Not Checked In
+                  NOT CHECKED IN
                 </span>
               )}
             </div>
 
-            <div style={{ color: 'var(--color-text-muted)', fontSize: 'var(--text-xs)', marginTop: 'var(--space-1)' }}>
-              ID: <strong style={{ fontFamily: 'var(--font-mono)' }}>{data?.profile?.employeeId || 'EMP...'}</strong> | Role: {data?.profile?.jobTitle || 'Staff'}
+            <div style={{ color: 'var(--color-text-muted)', fontSize: 'var(--text-xs)', marginTop: 'var(--space-1)', fontFamily: 'var(--font-mono)' }}>
+              ID: {data?.profile?.employeeId || 'EMP...'} | ROLE: {data?.profile?.jobTitle || 'Staff'}
               {isWorking && todayAtt?.checkIn && (
-                <span style={{ color: 'var(--color-success-text)', marginLeft: 'var(--space-2)', fontWeight: 600 }}>
-                  • In at {formatTimestamp(todayAtt.checkIn)} (Elapsed: {formatElapsed(elapsedSeconds)})
-                </span>
-              )}
-              {isCompleted && (
-                <span style={{ color: 'var(--color-text-secondary)', marginLeft: 'var(--space-2)' }}>
-                  • Total Worked: {todayAtt?.workMinutes ? `${Math.floor(todayAtt.workMinutes / 60)}h ${todayAtt.workMinutes % 60}m` : 'Completed'}
+                <span style={{ color: 'var(--color-success-text)', marginLeft: 'var(--space-2)', fontWeight: 700 }}>
+                  [IN AT {formatTimestamp(todayAtt.checkIn)} // ELAPSED {formatElapsed(elapsedSeconds)}]
                 </span>
               )}
             </div>
@@ -206,9 +201,9 @@ export const EmployeePage: React.FC = () => {
               <button
                 onClick={handleCheckIn}
                 disabled={actionLoading || loading}
-                className="btn btn-success"
+                className="btn btn-primary"
               >
-                {actionLoading ? 'Checking In...' : '⏱️ Check In'}
+                {actionLoading ? 'Recording...' : '⏱️ Check In For Today →'}
               </button>
             ) : isWorking ? (
               <button
@@ -216,52 +211,47 @@ export const EmployeePage: React.FC = () => {
                 disabled={actionLoading || loading}
                 className="btn btn-danger"
               >
-                {actionLoading ? 'Checking Out...' : '🚪 Check Out'}
+                {actionLoading ? 'Recording...' : '🚪 Check Out →'}
               </button>
             ) : (
               <button
                 onClick={() => navigate('/employee/attendance')}
                 className="btn btn-secondary btn-sm"
               >
-                View History
+                View History →
               </button>
             )}
           </div>
         </div>
 
-        {loading ? (
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-              gap: 'var(--space-4)',
-              marginBottom: 'var(--space-6)',
-            }}
-          >
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="stat-card">
-                <div className="skeleton skeleton-text" style={{ width: '40%' }} />
-                <div className="skeleton skeleton-stat" />
-                <div className="skeleton skeleton-text" style={{ width: '60%' }} />
-              </div>
-            ))}
+        {/* SECTION 1: DIVIDED STATS OVERVIEW */}
+        <section style={{ marginBottom: 'var(--space-8)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-4)' }}>
+            <h2 style={{ fontSize: 'var(--text-xl)', color: 'var(--color-text-primary)' }}>
+              Personal Overview
+            </h2>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)' }}>
+              SUMMARY
+            </span>
           </div>
-        ) : data ? (
-          <>
-            {/* Overview Summary Cards */}
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-                gap: 'var(--space-4)',
-                marginBottom: 'var(--space-6)',
-              }}
-            >
+
+          {loading ? (
+            <div className="stat-grid-container">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="stat-grid-cell">
+                  <div className="skeleton skeleton-text" style={{ width: '40%' }} />
+                  <div className="skeleton skeleton-stat" style={{ width: '70%' }} />
+                  <div className="skeleton skeleton-text" style={{ width: '50%' }} />
+                </div>
+              ))}
+            </div>
+          ) : data ? (
+            <div className="stat-grid-container">
               {/* Today Status */}
-              <div className="stat-card">
-                <span className="stat-label">Today's Attendance</span>
-                <div className="stat-value" style={{ color: isWorking || isCompleted ? 'var(--color-success)' : 'var(--color-warning)', fontSize: 'var(--text-2xl)' }}>
-                  {isWorking ? 'In Shift' : isCompleted ? 'Completed' : 'Not Checked In'}
+              <div className="stat-grid-cell">
+                <span className="stat-label">Shift Status</span>
+                <div className="stat-value" style={{ fontSize: 'var(--text-2xl)' }}>
+                  {isWorking ? 'In Shift' : isCompleted ? 'Completed' : 'Not Started'}
                 </div>
                 <span className="stat-subtext">
                   {todayAtt?.checkIn ? `Punched at ${formatTimestamp(todayAtt.checkIn)}` : 'No punch recorded today'}
@@ -269,160 +259,196 @@ export const EmployeePage: React.FC = () => {
               </div>
 
               {/* Pending Leave */}
-              <div className="stat-card" style={{ cursor: 'pointer' }} onClick={() => navigate('/employee/time-off')}>
-                <span className="stat-label">Pending Leave Requests</span>
-                <div className="stat-value" style={{ color: 'var(--color-warning)' }}>
+              <div className="stat-grid-cell" style={{ cursor: 'pointer' }} onClick={() => navigate('/employee/time-off')}>
+                <span className="stat-label">Pending Leave</span>
+                <div className="stat-value" style={{ color: data.timeOff.pending > 0 ? 'var(--color-warning)' : 'var(--color-text-primary)' }}>
                   {data.timeOff.pending}
                 </div>
-                <span className="stat-subtext">Awaiting HR approval</span>
+                <span className="stat-subtext">Awaiting HR approval →</span>
               </div>
 
               {/* Approved Leave */}
-              <div className="stat-card" style={{ cursor: 'pointer' }} onClick={() => navigate('/employee/time-off')}>
-                <span className="stat-label">Approved Leaves</span>
-                <div className="stat-value" style={{ color: 'var(--color-primary)' }}>
+              <div className="stat-grid-cell" style={{ cursor: 'pointer' }} onClick={() => navigate('/employee/time-off')}>
+                <span className="stat-label">Approved Time Off</span>
+                <div className="stat-value">
                   {data.timeOff.approved}
                 </div>
-                <span className="stat-subtext">Scheduled time off</span>
+                <span className="stat-subtext">Approved leave history →</span>
               </div>
             </div>
+          ) : null}
+        </section>
 
-            {/* Quick Action Navigation Modules */}
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-                gap: 'var(--space-4)',
-                marginBottom: 'var(--space-8)',
-              }}
-            >
-              <div onClick={() => navigate('/employee/attendance')} className="action-card">
-                <div style={{ fontSize: '1.5rem', marginBottom: 'var(--space-2)' }}>⏱️</div>
-                <h3 style={{ margin: 0, fontSize: 'var(--text-base)', color: 'var(--color-success)' }}>My Attendance</h3>
-                <p style={{ margin: 'var(--space-1) 0 0', fontSize: 'var(--text-xs)', color: 'var(--color-text-secondary)' }}>
-                  Monthly check-in history and punch duration logs
-                </p>
-              </div>
+        {/* SECTION 2: WORKSPACE MODULES */}
+        <section style={{ marginBottom: 'var(--space-8)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-4)' }}>
+            <h2 style={{ fontSize: 'var(--text-xl)', color: 'var(--color-text-primary)' }}>
+              Quick Navigation
+            </h2>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)' }}>
+              PORTAL APPS
+            </span>
+          </div>
 
-              <div onClick={() => navigate('/employee/time-off')} className="action-card">
-                <div style={{ fontSize: '1.5rem', marginBottom: 'var(--space-2)' }}>🌴</div>
-                <h3 style={{ margin: 0, fontSize: 'var(--text-base)', color: 'var(--color-warning)' }}>Apply Time Off</h3>
-                <p style={{ margin: 'var(--space-1) 0 0', fontSize: 'var(--text-xs)', color: 'var(--color-text-secondary)' }}>
-                  Leave balance entitlements and request submission
-                </p>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+              gap: 'var(--space-5)',
+            }}
+          >
+            <div onClick={() => navigate('/employee/attendance')} className="action-card">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-2)' }}>
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)' }}>LOGS</span>
+                <span>→</span>
               </div>
-
-              <div onClick={() => navigate('/employee/profile')} className="action-card">
-                <div style={{ fontSize: '1.5rem', marginBottom: 'var(--space-2)' }}>👤</div>
-                <h3 style={{ margin: 0, fontSize: 'var(--text-base)', color: 'var(--color-primary)' }}>My Profile</h3>
-                <p style={{ margin: 'var(--space-1) 0 0', fontSize: 'var(--text-xs)', color: 'var(--color-text-secondary)' }}>
-                  Personal info, job details, and skill tags
-                </p>
-              </div>
-
-              <div onClick={() => navigate('/employee/payroll')} className="action-card">
-                <div style={{ fontSize: '1.5rem', marginBottom: 'var(--space-2)' }}>💰</div>
-                <h3 style={{ margin: 0, fontSize: 'var(--text-base)', color: 'var(--color-purple)' }}>My Payroll</h3>
-                <p style={{ margin: 'var(--space-1) 0 0', fontSize: 'var(--text-xs)', color: 'var(--color-text-secondary)' }}>
-                  Monthly wage and dynamic salary components
-                </p>
-              </div>
+              <h3 style={{ margin: 0, fontSize: 'var(--text-base)', color: 'var(--color-text-primary)' }}>My Attendance</h3>
+              <p style={{ margin: 'var(--space-1) 0 0', fontSize: 'var(--text-xs)', color: 'var(--color-text-secondary)' }}>
+                Monthly check-in logs and punch duration records
+              </p>
             </div>
 
-            {/* Recent Logs Section */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: 'var(--space-6)' }}>
-              {/* Recent Attendance */}
-              <div className="card card-padding">
-                <h3 style={{ margin: '0 0 var(--space-4)', fontSize: 'var(--text-base)', color: 'var(--color-text-primary)' }}>
+            <div onClick={() => navigate('/employee/time-off')} className="action-card">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-2)' }}>
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)' }}>VACATION</span>
+                <span>→</span>
+              </div>
+              <h3 style={{ margin: 0, fontSize: 'var(--text-base)', color: 'var(--color-text-primary)' }}>Apply Time Off</h3>
+              <p style={{ margin: 'var(--space-1) 0 0', fontSize: 'var(--text-xs)', color: 'var(--color-text-secondary)' }}>
+                Leave balance entitlements and request submission
+              </p>
+            </div>
+
+            <div onClick={() => navigate('/employee/profile')} className="action-card">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-2)' }}>
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)' }}>DETAILS</span>
+                <span>→</span>
+              </div>
+              <h3 style={{ margin: 0, fontSize: 'var(--text-base)', color: 'var(--color-text-primary)' }}>My Profile</h3>
+              <p style={{ margin: 'var(--space-1) 0 0', fontSize: 'var(--text-xs)', color: 'var(--color-text-secondary)' }}>
+                Personal info, department, and expertise tags
+              </p>
+            </div>
+
+            <div onClick={() => navigate('/employee/payroll')} className="action-card">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-2)' }}>
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)' }}>COMPENSATION</span>
+                <span>→</span>
+              </div>
+              <h3 style={{ margin: 0, fontSize: 'var(--text-base)', color: 'var(--color-text-primary)' }}>My Payroll</h3>
+              <p style={{ margin: 'var(--space-1) 0 0', fontSize: 'var(--text-xs)', color: 'var(--color-text-secondary)' }}>
+                Monthly base wage and dynamic salary components
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* SECTION 3: RECENT RECORDS */}
+        {data && !loading && (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: 'var(--space-6)' }}>
+            {/* Recent Attendance */}
+            <div className="card card-padding">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-4)' }}>
+                <h3 style={{ margin: 0, fontSize: 'var(--text-base)', color: 'var(--color-text-primary)' }}>
                   Recent Attendance Records
                 </h3>
-                {data.attendance.recent.length === 0 ? (
-                  <p style={{ color: 'var(--color-text-muted)', fontSize: 'var(--text-sm)' }}>No recent attendance logs found.</p>
-                ) : (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
-                    {data.attendance.recent.slice(0, 5).map((att) => (
-                      <div
-                        key={att.id}
-                        style={{
-                          padding: 'var(--space-3)',
-                          backgroundColor: 'var(--color-bg-subtle)',
-                          borderRadius: 'var(--radius-md)',
-                          border: '1px solid var(--color-border)',
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          alignItems: 'center',
-                        }}
-                      >
-                        <div>
-                          <strong style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-primary)' }}>
-                            {new Date(att.date).toLocaleDateString()}
-                          </strong>
-                          <div style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)', marginTop: '2px' }}>
-                            {att.checkIn ? `In: ${formatTimestamp(att.checkIn)}` : ''}{' '}
-                            {att.checkOut ? `| Out: ${formatTimestamp(att.checkOut)}` : ''}
-                          </div>
-                        </div>
-                        <span className={`badge ${att.status === 'PRESENT' ? 'badge-success' : 'badge-warning'}`} style={{ fontSize: 'var(--text-xs)' }}>
-                          <span className="badge-dot" />
-                          {att.status}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                )}
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)' }}>
+                  LAST 5 LOGS
+                </span>
               </div>
 
-              {/* Recent Time Off */}
-              <div className="card card-padding">
-                <h3 style={{ margin: '0 0 var(--space-4)', fontSize: 'var(--text-base)', color: 'var(--color-text-primary)' }}>
+              {data.attendance.recent.length === 0 ? (
+                <p style={{ color: 'var(--color-text-muted)', fontSize: 'var(--text-sm)' }}>No recent attendance logs found.</p>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
+                  {data.attendance.recent.slice(0, 5).map((att) => (
+                    <div
+                      key={att.id}
+                      style={{
+                        padding: 'var(--space-3) var(--space-4)',
+                        backgroundColor: 'var(--color-surface-warm)',
+                        borderRadius: 'var(--radius-md)',
+                        border: '1px solid var(--color-border)',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                      }}
+                    >
+                      <div>
+                        <strong style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-primary)' }}>
+                          {new Date(att.date).toLocaleDateString()}
+                        </strong>
+                        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)', marginTop: '2px' }}>
+                          {att.checkIn ? `In: ${formatTimestamp(att.checkIn)}` : ''}{' '}
+                          {att.checkOut ? `| Out: ${formatTimestamp(att.checkOut)}` : ''}
+                        </div>
+                      </div>
+                      <span className={`badge ${att.status === 'PRESENT' ? 'badge-success' : 'badge-warning'}`} style={{ fontSize: 'var(--text-xs)' }}>
+                        <span className="badge-dot" />
+                        {att.status}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Recent Time Off */}
+            <div className="card card-padding">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-4)' }}>
+                <h3 style={{ margin: 0, fontSize: 'var(--text-base)', color: 'var(--color-text-primary)' }}>
                   Recent Leave Requests
                 </h3>
-                {data.timeOff.recent.length === 0 ? (
-                  <p style={{ color: 'var(--color-text-muted)', fontSize: 'var(--text-sm)' }}>No recent leave requests found.</p>
-                ) : (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
-                    {data.timeOff.recent.slice(0, 5).map((req) => (
-                      <div
-                        key={req.id}
-                        style={{
-                          padding: 'var(--space-3)',
-                          backgroundColor: 'var(--color-bg-subtle)',
-                          borderRadius: 'var(--radius-md)',
-                          border: '1px solid var(--color-border)',
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          alignItems: 'center',
-                        }}
-                      >
-                        <div>
-                          <strong style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-primary)' }}>
-                            {req.leaveType} ({req.days} days)
-                          </strong>
-                          <div style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)', marginTop: '2px' }}>
-                            {new Date(req.startDate).toLocaleDateString()} - {new Date(req.endDate).toLocaleDateString()}
-                          </div>
-                        </div>
-                        <span
-                          className={`badge ${
-                            req.status === 'APPROVED'
-                              ? 'badge-success'
-                              : req.status === 'REJECTED'
-                              ? 'badge-error'
-                              : 'badge-warning'
-                          }`}
-                          style={{ fontSize: 'var(--text-xs)' }}
-                        >
-                          <span className="badge-dot" />
-                          {req.status}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                )}
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)' }}>
+                  HISTORY
+                </span>
               </div>
+
+              {data.timeOff.recent.length === 0 ? (
+                <p style={{ color: 'var(--color-text-muted)', fontSize: 'var(--text-sm)' }}>No recent leave requests found.</p>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
+                  {data.timeOff.recent.slice(0, 5).map((req) => (
+                    <div
+                      key={req.id}
+                      style={{
+                        padding: 'var(--space-3) var(--space-4)',
+                        backgroundColor: 'var(--color-surface-warm)',
+                        borderRadius: 'var(--radius-md)',
+                        border: '1px solid var(--color-border)',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                      }}
+                    >
+                      <div>
+                        <strong style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-primary)' }}>
+                          {req.leaveType} ({req.days} days)
+                        </strong>
+                        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)', marginTop: '2px' }}>
+                          {new Date(req.startDate).toLocaleDateString()} - {new Date(req.endDate).toLocaleDateString()}
+                        </div>
+                      </div>
+                      <span
+                        className={`badge ${
+                          req.status === 'APPROVED'
+                            ? 'badge-success'
+                            : req.status === 'REJECTED'
+                            ? 'badge-error'
+                            : 'badge-warning'
+                        }`}
+                        style={{ fontSize: 'var(--text-xs)' }}
+                      >
+                        <span className="badge-dot" />
+                        {req.status}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
-          </>
-        ) : null}
+          </div>
+        )}
       </main>
     </>
   );
